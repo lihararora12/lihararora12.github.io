@@ -21,7 +21,7 @@
 title: Vuln Management and Memes
 email: contact@vuln.management
 description: >- # this means to ignore newlines until "baseurl:"
-  Collection of quality cybersecurity memes and a little bit of vulnerability management information.
+  Collection of quality cybersecurity memes and a little bit about vulnerability management.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: lihararora

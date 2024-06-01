@@ -6,7 +6,7 @@ layout: default
 
 <h1>{{ page.title }}</h1>
 <ul style="list-style: none;">
-  {% for i in (1..num) %}
+  {% for i in (num..1) %}
   <li style="list-style: none; margin-top: 40px">
     <img style="max-width: 500px; display: block; margin: auto;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-{{ i }}.jpg" alt="Photo {{ i }} from {{ page.photos.set | capitalize }}">
   </li>

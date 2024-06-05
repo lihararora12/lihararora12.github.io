@@ -1,5 +1,5 @@
 ---
-layout: photo_set
+layout: default
 permalink: /posts/
 description: "Blog posts."
 

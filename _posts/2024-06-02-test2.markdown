@@ -1,0 +1,108 @@
+Episode 109 of the Public Key podcast is here and this is our “Live from Links” series, where we showcase our podcasts recorded live at the Chainalysis Links Conference in NYC!  The Lazarus Group and North Korean Hackers have plagued the crypto and DeFi world with some of the most profitable hacks in history.  We speak to  Jessica Peck  (Senior Counsel, US Department of Justice) and  Chris Wong  (Supervisory Special Agent, FBI) to share juicy stories of the origins of these hacks and how law enforcement is attempting to stall these hacker’s efforts. 
+ You can listen or subscribe now on  Spotify ,  Apple , or  Audible . Keep reading for a full preview of episode 109. 
+ 
+ Public Key Episode 109: Unmasking the Lazarus Group: How North Korea is Using Crypto to Fund its Weapons Programs 
+ “We need to think about more creative ways in order to get at the ultimate issue here, which is that they’re generating revenue for their weapons of mass destruction (WMD) and ballistic missile programs.”  – Jessica Peck 
+ In this episode,  Ian Andrews  (CMO, Chainalysis) is lucky enough to grab Jessica Peck (Senior Counsel, US Department of Justice) and Chris Wong (Supervisory Special Agent, FBI) right off of the main stage to their experiences investigating North Korea’s involvement in cryptocurrency and their efforts to track and seize stolen assets.  
+ 
+ Chris shares his journey from working on interdicting assets to diving into the world of crypto, while Jessica discusses her transition from prosecuting weapons and narcotics cases to focusing on cybercrime and cryptocurrency-related investigations.  
+ 
+ The trio explore the tactics used by North Korea to launder money and the effectiveness of sanctions in combating these activities.  They also describe the new trends of North Koreans being unknowingly hired by blockchain companies around the world and the associated risks.  
+ Quote of the episode 
+ “We need to think about more creative ways in order to get at the ultimate issue here, which is that they’re generating revenue for their weapons of mass destruction (WMD) and ballistic missile programs.”  – Jessica Peck (Senior Counsel, US Department of Justice) 
+ Minute-by-minute episode breakdown 
+ 2 | FBI’s Involvement in intercepting North Korean mineral exports  
+ 4 | Jessica and Chris’ background and their first crypto investigation cases  
+ 7 | Thwarting North Korean crypto revenue and tracking and recovering stolen cryptocurrency  
+ 11 | Tracing North Korea’s cryptocurrency laundering efficacy 
+ 17 | Evaluating the effectiveness of sanctions on cryptocurrency mixers 
+ 19 | Debating cybersecurity and risk management in crypto  
+ 25 | North Koreans being employed by crypto forms to develop smart contracts  
+ 27 | Best practices for staying safe in crypto and avoiding costly hacks  
+ Related resources 
+ Check out more resources provided by Chainalysis that perfectly complement this episode of the Public Key. 
+ 
+ Website:  FBI: We protect the American people and uphold the U.S. Constitution 
+ Website:  DOJ: To uphold the rule of law, to keep our country safe, and to protect civil rights 
+ 
+ 
+ Article:  FBI Identifies Lazarus Group Cyber Actors as Responsible for Theft of $41 Million from Stake.com 
+ 
+ 
+ Blog:    $30 Million Seized: How the Cryptocurrency Community Is Making It Difficult for North Korean Hackers To Profit 
+ Registration :  Digital premiere of Links 2024 (NYC Main Stage Content and more – Register Now!)  
+ 
+ 
+ [CHAINALYSIS PODCAST EPISODE 8]  The Lazarus Heist: A Peek Inside North Korea’s Global Cyber War 
+ 
+ 
+ YouTube :  Chainalysis YouTube page  
+ Twitter :  Chainalysis Twitter: Building trust in blockchain 
+ Tik Tok:   Building trust in #blockchains among people, businesses, and governments. 
+ Telegram :  Chainalysis on Telegram  
+ 
+ Speakers on today’s episode 
+ 
+ Ian Andrews   * Host * (Chief Marketing Officer, Chainalysis)  
+ Jessica Peck  (Senior Counsel, US Department of Justice) 
+ Chris Wong  (Supervisory Special Agent, FBI) 
+ 
+ This website may contain links to third-party sites that are not under the c ontrol of Chainalysis, Inc. or its affiliates (collectively “Chainalysis”). Access to such information does not imply association with, endorsement of, approval of, or recommendation by Chainalysis of the site or its operators, and Chainalysis is not responsible for the products, services, or other content hosted therein. 
+ Our podcasts are for informational purposes only, and are not intended to provide legal, tax, financial, or investment advice. Listeners should consult their own advisors before making these types of decisions. Chainalysis has no responsibility or liability for any decision made or any other acts or omissions in connection with your use of this material. 
+ Chainalysis does not guarantee or warrant the accuracy, completeness, timeliness, suitability or validity of the information in any particular podcast and will not be responsible for any claim attributable to errors, omissions, or other inaccuracies of any part of such material.  
+ Unless stated otherwise, reference to any specific product or entity does not constitute an endorsement or recommendation by Chainalysis. The views expressed by guests are their own and their appearance on the program does not imply an endorsement of them or any entity they represent. Views and opinions expressed by Chainalysis employees are those of the employees and do not necessarily reflect the views of the company.  
+ Transcript 
+ Ian: 
+ Hi everyone, back with another episode of Public Key, Live from Lynx. I’m your host, Ian Andrews. Today I’m joined by Christopher Wong Supervisory Special Agent at Federal Bureau of Investigation; and Jessica Peck, who’s a senior counsel with the U.S. Department of Justice. Chris, Jessica, welcome to the show. 
+ Christopher: 
+ Thank you. 
+ Jessica: 
+ Thanks for having us. 
+ Ian: 
+ Now, you just got off stage prior to us recording this, Talking Lazarus group. We’re going to get into North Korea, stolen crypto, there’s a lot of good topics. There’s also things falling behind us. I don’t know if the mics picked that up, but could have been worse. 
+ But maybe let’s start, Chris, if you’re willing to go first, talk to us a little bit about, you’ve been involved in some pretty big cases in the history of the cryptocurrency world. Talk about a couple of the things that you’ve had the opportunity to work on over the years. 
+ Christopher: 
+ Been in the FBI almost nine years now I guess. 
+ Ian: 
+ Okay. 
+ Christopher: 
+ And really had been working North Korea the entire time. 
+ Ian: 
+ Yeah. 
+ Christopher: 
+ So I really didn’t start getting into crypto until 2018-ish. 
+ Ian: 
+ Okay. 
+ Christopher: 
+ Before that, it was a lot of interdicting assets going through US correspondent wire systems. 
+ Jessica: 
+ Oil and minerals. 
+ Christopher: 
+ Oil and minerals, North Korean coal, going through Chinese coal trading companies, a lot of that sort of thing. 
+ Ian: 
+ Sorry, why does the FBI get involved in North Korean minerals? 
+ Christopher: 
+ We’re going deep real fast. 
+ Ian: 
+ I couldn’t let that one hang. 
+ Christopher: 
+ So North Korea, let’s just leave crypto aside for now. 
+ Ian: 
+ Yeah, absolutely. 
+ Christopher: 
+ We’re going to spend a lot of time talking about it. But when you talk about the ways that North Korea generates revenue, one of its main or biggest sources of revenue is the export of minerals. So one of the things that the Korean Peninsula has, and North Korea specifically has, coal, iron ore. So if you look at some of the actions that the U.S. Department of Justice and the FBI took back in 2017-ish time frame, you’ll see a lot of actions against Chinese coal trading firms who were doing a lot of business with North Korea exporting their coal, and essentially using some of their bank accounts as offshore accounts for the North Koreans. 
+ Ian: 
+ Got it. Okay. I interrupted you to get that clarity. 
+ Christopher: 
+ So yes, I started getting involved in crypto, working with Chris Janczewski with the IRS, and working with Jessica Peck and Zia Farooqi back in 2018. That’s my learning curve and starting getting into it and seeing some of those earlier hacks from the 2018 timeframe, but also branching out beyond North Korea and starting to look at acts like Bifenex. 
+ Ian: 
+ Yeah, we’ll talk a little bit about Bifenex when that showed up on your radar, if you don’t mind. 
+ Christopher: 
+ I mean, honestly, that was kind of a collaboration with Chris Janczewski leading a lot of the way, Jessica Peck being involved. 
+ Jessica: 
+ For context, Chris Janczewski was a special agent with the IRS. He is now at TRM labs. 
+ Christopher: 
+ Correct, sorry. Thanks for the definition. 
+ Jessica: 
+ Okay. 
+ He’s the head of their global investigations team. 

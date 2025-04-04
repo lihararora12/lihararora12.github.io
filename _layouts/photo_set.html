@@ -12,8 +12,9 @@ layout: default
 </div>
 
 <!-- Random Image Display -->
-<div id="randomImageContainer" style="text-align: center; margin: 20px 0;">
-  <img id="randomImage" style="max-width: 100%; max-height: 70vh; object-fit: contain; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
+<div id="randomImageContainer" style="text-align: center; margin: 20px 0; position: relative;">
+  <img id="randomImage" style="max-width: 100%; max-height: 70vh; object-fit: contain; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
+  <div id="imageOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10;"></div>
 </div>
 
 <!-- Data attributes for JavaScript -->
@@ -29,12 +30,8 @@ layout: default
     background: #444;
   }
   
-  #randomImage:hover {
-    opacity: 0.95;
-  }
-  
-  #randomImageContainer {
-    touch-action: manipulation;
+  #imageOverlay {
+    cursor: pointer;
   }
 </style>
 
@@ -68,15 +65,8 @@ layout: default
     showRandomImage();
   });
   
-  // Add click event listener to the image
-  document.getElementById('randomImage').addEventListener('click', function(e) {
-    // Prevent default behavior to avoid highlighting
-    e.preventDefault();
+  // Add click event listener to the overlay
+  document.getElementById('imageOverlay').addEventListener('click', function() {
     showRandomImage();
   });
-  
-  // Prevent default touch behavior
-  document.getElementById('randomImage').addEventListener('touchstart', function(e) {
-    e.preventDefault();
-  }, { passive: false });
 </script>

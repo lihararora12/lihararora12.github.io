@@ -13,7 +13,7 @@ layout: default
 
 <!-- Random Image Display -->
 <div id="randomImageContainer" style="text-align: center; margin: 20px 0;">
-  <img id="randomImage" style="max-width: 100%; max-height: 70vh; object-fit: contain; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
+  <img id="randomImage" style="max-width: 100%; max-height: 70vh; object-fit: contain; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
 </div>
 
 <!-- Data attributes for JavaScript -->
@@ -29,8 +29,8 @@ layout: default
     background: #444;
   }
   
-  #randomImageContainer {
-    touch-action: pan-x pan-y;
+  #randomImage:hover {
+    opacity: 0.95;
   }
 </style>
 
@@ -64,40 +64,8 @@ layout: default
     showRandomImage();
   });
   
-  // Swipe detection variables
-  let touchStartX = 0;
-  let touchEndX = 0;
-  const swipeThreshold = 50; // minimum distance for a swipe
-  
-  // Add touch event listeners for swipe detection
-  const imageContainer = document.getElementById('randomImageContainer');
-  
-  imageContainer.addEventListener('touchstart', function(e) {
-    touchStartX = e.changedTouches[0].screenX;
-  }, false);
-  
-  imageContainer.addEventListener('touchend', function(e) {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, false);
-  
-  // Handle mouse swipe for desktop
-  imageContainer.addEventListener('mousedown', function(e) {
-    touchStartX = e.screenX;
-  }, false);
-  
-  imageContainer.addEventListener('mouseup', function(e) {
-    touchEndX = e.screenX;
-    handleSwipe();
-  }, false);
-  
-  // Function to handle swipe
-  function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX;
-    
-    // Check if the swipe distance exceeds the threshold
-    if (Math.abs(swipeDistance) > swipeThreshold) {
-      showRandomImage();
-    }
-  }
+  // Add double-click event listener to the image
+  document.getElementById('randomImage').addEventListener('dblclick', function() {
+    showRandomImage();
+  });
 </script>

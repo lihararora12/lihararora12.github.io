@@ -4,21 +4,46 @@ layout: default
 
 {% assign num = page.photos.size %}
 
-<h1>{{ page.title }}</h1>
+<!-- Random Image Button -->
+<div style="text-align: center; margin: 40px 0;">
+  <button id="randomMemeBtn" style="padding: 12px 24px; font-size: 16px; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 4px; transition: background 0.3s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    Random Meme
+  </button>
+</div>
 
 <!-- Random Image Display -->
 <div id="randomImageContainer" style="text-align: center; margin: 20px 0;">
-  <img id="randomImage" style="max-width: 100%; max-height: 80vh; object-fit: contain;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
+  <img id="randomImage" style="max-width: 100%; max-height: 70vh; object-fit: contain; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
 </div>
 
+<!-- Data attributes for JavaScript -->
+<div id="memeData" 
+     data-num-images="{{ num }}" 
+     data-base-url="{{ site.baseurl }}" 
+     data-set-name="{{ page.photos.set }}" 
+     style="display: none;">
+</div>
+
+<style>
+  #randomMemeBtn:hover {
+    background: #444;
+  }
+</style>
+
 <script>
+  // Get data from the hidden div
+  const memeData = document.getElementById('memeData');
+  const numImages = parseInt(memeData.getAttribute('data-num-images'));
+  const baseUrl = memeData.getAttribute('data-base-url');
+  const setName = memeData.getAttribute('data-set-name');
+  
   // Get all image numbers
-  const imageNumbers = Array.from({length: {{ num }}}, (_, i) => i + 1);
+  const imageNumbers = Array.from({length: numImages}, (_, i) => i + 1);
   
   // Function to get a random image path
   function getRandomImagePath() {
     const randomIndex = Math.floor(Math.random() * imageNumbers.length);
-    return "{{ site.baseurl }}/images/photos/{{ page.photos.set }}-" + imageNumbers[randomIndex] + ".jpg";
+    return baseUrl + "/images/photos/" + setName + "-" + imageNumbers[randomIndex] + ".jpg";
   }
 
   // Function to show random image
@@ -30,9 +55,8 @@ layout: default
   // Show random image when page loads
   showRandomImage();
 
-  // Add click event listener to the random meme button in the menu
-  document.getElementById('randomMemeBtn').addEventListener('click', function(e) {
-    e.preventDefault();
+  // Add click event listener to the random meme button
+  document.getElementById('randomMemeBtn').addEventListener('click', function() {
     showRandomImage();
   });
 </script>

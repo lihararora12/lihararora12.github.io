@@ -28,6 +28,10 @@ layout: default
   #randomMemeBtn:hover {
     background: #444;
   }
+  
+  #randomImageContainer {
+    touch-action: pan-x pan-y;
+  }
 </style>
 
 <script>
@@ -59,4 +63,41 @@ layout: default
   document.getElementById('randomMemeBtn').addEventListener('click', function() {
     showRandomImage();
   });
+  
+  // Swipe detection variables
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const swipeThreshold = 50; // minimum distance for a swipe
+  
+  // Add touch event listeners for swipe detection
+  const imageContainer = document.getElementById('randomImageContainer');
+  
+  imageContainer.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, false);
+  
+  imageContainer.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, false);
+  
+  // Handle mouse swipe for desktop
+  imageContainer.addEventListener('mousedown', function(e) {
+    touchStartX = e.screenX;
+  }, false);
+  
+  imageContainer.addEventListener('mouseup', function(e) {
+    touchEndX = e.screenX;
+    handleSwipe();
+  }, false);
+  
+  // Function to handle swipe
+  function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX;
+    
+    // Check if the swipe distance exceeds the threshold
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+      showRandomImage();
+    }
+  }
 </script>

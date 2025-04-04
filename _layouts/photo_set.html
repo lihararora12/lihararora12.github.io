@@ -5,10 +5,34 @@ layout: default
 {% assign num = page.photos.size %}
 
 <h1>{{ page.title }}</h1>
-<ul style="list-style: none;">
-  {% for i in (1..num) reversed %}
-  <li style="list-style: none; margin-top: 40px">
-    <img style="max-width: 500px; display: block; margin: auto;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-{{ i }}.jpg" alt="Photo {{ i }} from {{ page.photos.set | capitalize }}">
-  </li>
-  {% endfor %}
-</ul>
+
+<!-- Random Image Display -->
+<div id="randomImageContainer" style="text-align: center; margin: 20px 0;">
+  <img id="randomImage" style="max-width: 100%; max-height: 80vh; object-fit: contain;" src="{{ site.baseurl }}/images/photos/{{ page.photos.set }}-1.jpg" alt="Random Meme">
+</div>
+
+<script>
+  // Get all image numbers
+  const imageNumbers = Array.from({length: {{ num }}}, (_, i) => i + 1);
+  
+  // Function to get a random image path
+  function getRandomImagePath() {
+    const randomIndex = Math.floor(Math.random() * imageNumbers.length);
+    return "{{ site.baseurl }}/images/photos/{{ page.photos.set }}-" + imageNumbers[randomIndex] + ".jpg";
+  }
+
+  // Function to show random image
+  function showRandomImage() {
+    const randomImage = document.getElementById('randomImage');
+    randomImage.src = getRandomImagePath();
+  }
+
+  // Show random image when page loads
+  showRandomImage();
+
+  // Add click event listener to the random meme button in the menu
+  document.getElementById('randomMemeBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    showRandomImage();
+  });
+</script>

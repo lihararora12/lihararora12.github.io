@@ -8,5 +8,5 @@ description: "Cybersecurity Memes."
 
 photos:
     set: memes
-    size: 32
+    size: 38
 ---

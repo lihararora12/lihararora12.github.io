@@ -19,7 +19,7 @@ group :jekyll_plugins do
 end
 
 # Update nokogiri to the latest version
-gem "nokogiri", "~> 1.12.5"
+gem "nokogiri", "~> 1.18.8"
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 # and associated library.

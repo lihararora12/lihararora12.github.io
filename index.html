@@ -3,368 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VULN.MANAGEMENT // SECURITY BREACH</title>
+    <title>VULN.MANAGEMENT // ORBITAL LINK</title>
     
     <!-- Favicon -->
     <link rel="icon" href="images/favicon.png" type="image/png">
 
-    <!-- Google Fonts: Cyberpunk Aesthetics -->
+    <!-- Fonts: Tech & Future -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Cyberpunk Styling -->
+    <!-- Deep Space Styling -->
     <style>
         :root {
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff00ff;
-            --neon-green: #0aff0a;
-            --bg-dark: #050505;
-            --terminal-bg: rgba(10, 10, 10, 0.9);
+            --void-bg: #030508;
+            --hud-primary: #00f0ff;
+            --hud-secondary: #4d8dff;
+            --hud-alert: #ff2a6d;
+            --glass-bg: rgba(5, 10, 20, 0.75);
+            --glass-border: rgba(77, 141, 255, 0.3);
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--neon-cyan);
-            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--void-bg);
+            background-image: radial-gradient(circle at 50% 50%, #111827 0%, #030508 100%);
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* --- Scanline Overlay --- */
-        .scanlines {
+        /* --- Parallax Star Field --- */
+        .star-layer {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
-            animation: scrollScanlines 10s linear infinite;
-        }
-
-        @keyframes scrollScanlines {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
-        }
-
-        /* --- Glitch Effect for Title --- */
-        .glitch-wrapper {
-            position: relative;
-        }
-
-        .glitch {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            position: relative;
-            color: white;
-            letter-spacing: 0.1em;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch::before {
-            left: 2px;
-            text-shadow: -1px 0 var(--neon-pink);
-            clip-path: inset(0 0 0 0);
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-        }
-
-        .glitch::after {
-            left: -2px;
-            text-shadow: -1px 0 var(--neon-cyan);
-            clip-path: inset(0 0 0 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); }
-            20% { clip-path: inset(60% 0 10% 0); }
-            40% { clip-path: inset(40% 0 50% 0); }
-            60% { clip-path: inset(80% 0 5% 0); }
-            80% { clip-path: inset(10% 0 40% 0); }
-            100% { clip-path: inset(30% 0 10% 0); }
-        }
-
-        @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); }
-            20% { clip-path: inset(30% 0 20% 0); }
-            40% { clip-path: inset(10% 0 80% 0); }
-            60% { clip-path: inset(70% 0 10% 0); }
-            80% { clip-path: inset(50% 0 30% 0); }
-            100% { clip-path: inset(20% 0 60% 0); }
-        }
-
-        /* --- UI Elements --- */
-        .cyber-box {
-            background: var(--terminal-bg);
-            border: 1px solid var(--neon-cyan);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-            position: relative;
-        }
-
-        .cyber-box::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            width: 10px;
-            height: 10px;
-            border-top: 2px solid var(--neon-cyan);
-            border-left: 2px solid var(--neon-cyan);
-        }
-
-        .cyber-box::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            right: -1px;
-            width: 10px;
-            height: 10px;
-            border-bottom: 2px solid var(--neon-cyan);
-            border-right: 2px solid var(--neon-cyan);
-        }
-
-        .cyber-btn {
+            top: 0; left: 0; width: 100%; height: 100%;
             background: transparent;
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
+            z-index: -1;
+        }
+
+        /* Small Stars */
+        #stars-sm {
+            width: 1px; height: 1px;
+            background: transparent;
+            box-shadow: 100px 200px #FFF, 400px 500px #FFF, 700px 100px #FFF, 1200px 400px #FFF, 
+                        300px 800px #FFF, 900px 200px #FFF, 1500px 600px #FFF, 50px 600px #FFF,
+                        1700px 100px #FFF, 200px 300px #FFF, 1100px 800px #FFF, 600px 100px #FFF;
+            animation: drift 100s linear infinite;
+        }
+        /* Medium Stars */
+        #stars-md {
+            width: 2px; height: 2px;
+            background: transparent;
+            box-shadow: 200px 400px rgba(255,255,255,0.6), 600px 100px rgba(255,255,255,0.6), 
+                        900px 600px rgba(255,255,255,0.6), 1400px 300px rgba(255,255,255,0.6);
+            animation: drift 150s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0); }
+            to { transform: translateY(-2000px); }
+        }
+
+        /* --- Typography --- */
+        .title-glitch {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, var(--hud-secondary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(77, 141, 255, 0.5));
+        }
+
+        /* --- HUD Panel --- */
+        .hud-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(77, 141, 255, 0.05);
+            position: relative;
+        }
+
+        /* Technical Corners */
+        .hud-panel::before, .hud-panel::after {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            border: 2px solid var(--hud-primary);
+            transition: all 0.3s ease;
+        }
+        .hud-panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        .hud-panel::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        /* --- Scan Animation --- */
+        .scanner-line {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: var(--hud-primary);
+            box-shadow: 0 0 15px var(--hud-primary);
+            animation: scan 2s ease-in-out infinite;
+            opacity: 0.8;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* --- Buttons --- */
+        .space-btn {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--hud-primary);
+            color: var(--hud-primary);
+            font-family: 'Syncopate', sans-serif;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: all 0.2s ease;
-            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
 
-        .cyber-btn:hover {
-            background: var(--neon-pink);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-pink);
+        .space-btn:hover {
+            background: var(--hud-primary);
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
         }
 
-        .cyber-btn:active {
-            transform: scale(0.98);
+        .space-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
         }
-        
-        /* Links in resources section */
-        .cyber-link {
-            color: var(--neon-cyan);
-            text-decoration: none;
-            transition: all 0.2s;
-            display: inline-block;
+        .space-btn:hover::before {
+            left: 100%;
         }
-        
-        .cyber-link:hover {
-            color: var(--neon-green);
-            text-shadow: 0 0 8px var(--neon-green);
+
+        /* --- Resources Grid --- */
+        .intel-link {
+            border-left: 2px solid var(--glass-border);
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+        .intel-link:hover {
+            border-left-color: var(--hud-primary);
+            background: linear-gradient(90deg, rgba(77, 141, 255, 0.1), transparent);
             transform: translateX(5px);
         }
 
-        .terminal-text {
-            color: var(--neon-green);
-        }
-
-        .blinking-cursor::after {
-            content: '_';
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* Loader */
-        .loader-bar {
-            width: 0%;
-            height: 2px;
-            background-color: var(--neon-green);
-            transition: width 0.1s;
-        }
+        /* --- Utility --- */
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
         
-        /* Image Glitch Container */
-        .img-container img {
-            max-height: 60vh;
-            object-fit: contain;
-            border: 1px solid #333;
-        }
-        
-        /* Custom Scrollbar for the page */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333; 
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-cyan); 
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--hud-primary); }
     </style>
 </head>
-<body class="flex flex-col items-center justify-start p-4 pb-32">
+<body class="pt-8 pb-24 px-4">
 
-    <!-- CRT Scanlines -->
-    <div class="scanlines"></div>
+    <!-- Star Layers -->
+    <div id="stars-sm" class="star-layer"></div>
+    <div id="stars-md" class="star-layer"></div>
 
-    <!-- Main Container -->
-    <main class="w-full max-w-4xl flex flex-col items-center gap-8 relative z-10">
+    <!-- Main Interface -->
+    <main class="w-full max-w-5xl flex flex-col gap-6 relative z-10">
         
-        <!-- Viewer Section -->
-        <div class="cyber-box w-full p-6 md:p-10 flex flex-col items-center gap-8">
-            <!-- Header -->
-            <header class="w-full text-center border-b border-gray-800 pb-6">
-                <div class="glitch-wrapper mb-2">
-                    <h1 class="glitch text-4xl md:text-6xl" data-text="VULN.MANAGEMENT">VULN.MANAGEMENT</h1>
-                </div>
-                <p class="text-xs md:text-sm tracking-widest text-gray-400 mt-2">
-                    SYSTEM STATUS: <span class="text-green-500">COMPROMISED</span> // UNPROTECTED ASSETS DETECTED
-                </p>
-            </header>
+        <!-- Top Bar / Title -->
+        <header class="w-full flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-4 mb-4">
+            <div>
+                <p class="text-xs text-gray-500 tracking-[0.3em] mb-1">SECURE CONNECTION ESTABLISHED</p>
+                <h1 class="title-glitch text-3xl md:text-5xl">VULN.MANAGEMENT</h1>
+            </div>
+            <div class="text-right hidden md:block">
+                <p class="text-xs text-[var(--hud-primary)] font-mono">SYS.VER.4.0.2</p>
+                <p class="text-xs text-gray-400 font-mono">NODE: <span class="blink">ONLINE</span></p>
+            </div>
+        </header>
 
-            <!-- Viewer Console -->
-            <div class="w-full bg-black border border-gray-800 p-2 relative">
-                <div class="flex justify-between text-xs text-gray-500 mb-2 font-mono">
-                    <span>> TARGET_ID: <span id="target-id" class="text-cyan-400">SEARCHING...</span></span>
-                    <span>> MEMORY: <span id="mem-usage">0%</span></span>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Col: Main Viewer (Span 2) -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+                <!-- Viewer HUD -->
+                <div class="hud-panel p-1 rounded-sm w-full">
+                    <!-- HUD Header -->
+                    <div class="bg-black/40 flex justify-between items-center px-4 py-2 border-b border-white/5 text-xs font-mono text-[var(--hud-secondary)]">
+                        <span>// VISUAL_FEED</span>
+                        <span id="target-id">ID: WAITING_INPUT</span>
+                    </div>
 
-                <!-- Image Area -->
-                <div id="image-viewport" class="img-container w-full h-[60vh] flex items-center justify-center bg-[#0a0a0a] overflow-hidden relative">
-                    <!-- Loading State (Default) -->
-                    <div id="loader" class="flex flex-col items-center gap-2">
-                        <p class="terminal-text blinking-cursor">DECRYPTING MEME DATABASE...</p>
-                        <div class="w-48 h-2 bg-gray-800 mt-2">
-                            <div id="progress-bar" class="loader-bar"></div>
+                    <!-- Image Viewport -->
+                    <div class="relative w-full h-[50vh] md:h-[60vh] bg-black/60 flex items-center justify-center overflow-hidden group">
+                        <!-- Grid Overlay -->
+                        <div class="absolute inset-0 bg-[linear-gradient(rgba(77,141,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(77,141,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+
+                        <!-- Scanner Element -->
+                        <div id="scanner" class="scanner-line hidden"></div>
+
+                        <!-- Loader -->
+                        <div id="loader" class="flex flex-col items-center gap-3 relative z-20">
+                            <div class="w-12 h-12 border-2 border-[var(--hud-secondary)] border-t-[var(--hud-primary)] rounded-full animate-spin"></div>
+                            <p class="text-[var(--hud-secondary)] text-sm tracking-widest blink">ACQUIRING TARGET...</p>
+                        </div>
+
+                        <!-- Image -->
+                        <img id="meme-display" src="" alt="Target Asset" class="hidden max-h-full max-w-full object-contain relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+
+                        <!-- Error -->
+                        <div id="error-msg" class="hidden text-[var(--hud-alert)] text-center p-6 border border-[var(--hud-alert)] bg-red-900/10 backdrop-blur-md relative z-20">
+                            <p class="font-bold text-xl tracking-widest mb-1">SIGNAL LOSS</p>
+                            <p class="text-xs font-mono">UNABLE TO RETRIEVE ASSET FROM ARCHIVE</p>
                         </div>
                     </div>
                     
-                    <!-- The Image -->
-                    <img id="meme-display" src="" alt="Random Meme" class="hidden shadow-[0_0_15px_rgba(0,255,0,0.3)]">
+                    <!-- HUD Footer Stats -->
+                    <div class="bg-black/40 flex justify-between px-4 py-2 border-t border-white/5 text-[10px] font-mono text-gray-500 uppercase">
+                        <span>Lat: <span id="stat-lat">00.00</span> // Lon: <span id="stat-lon">00.00</span></span>
+                        <span>Buff: <span id="mem-usage">100%</span></span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <button onclick="randomizeMeme()" class="space-btn w-full py-5 text-lg md:text-xl font-bold tracking-widest">
+                    Initialize Next Scan
+                </button>
+            </div>
+
+            <!-- Right Col: Intelligence Data -->
+            <div class="flex flex-col gap-4">
+                <div class="hud-panel p-6 h-full flex flex-col">
+                    <h2 class="text-[var(--hud-primary)] font-syncopate text-lg mb-6 border-b border-gray-800 pb-2">
+                        Intel Database
+                    </h2>
                     
-                    <!-- Error State -->
-                    <div id="error-msg" class="hidden text-red-500 text-center p-4 border border-red-500 bg-red-900/10">
-                        <p class="font-bold">CRITICAL FAILURE</p>
-                        <p class="text-sm">ASSET NOT FOUND IN SECTOR 'IMAGES/PHOTOS/'</p>
+                    <div class="grid grid-cols-2 gap-4 text-sm flex-grow">
+                        <!-- Vulnerability Sources -->
+                        <div class="flex flex-col gap-3">
+                            <p class="text-[10px] uppercase text-gray-500 tracking-widest font-bold">Vulnerability Indices</p>
+                            <a href="https://osv.dev/" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">OSV.DEV</div>
+                                <div class="text-[10px] text-gray-400">Open Source Vulnerabilities</div>
+                            </a>
+                            <a href="https://nvd.nist.gov/" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">NIST NVD</div>
+                                <div class="text-[10px] text-gray-400">National Vuln Database</div>
+                            </a>
+                            <a href="https://cve.mitre.org/" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">MITRE CVE</div>
+                                <div class="text-[10px] text-gray-400">Common Vulnerabilities</div>
+                            </a>
+                        </div>
+
+                        <!-- Threat Sources -->
+                        <div class="flex flex-col gap-3">
+                            <p class="text-[10px] uppercase text-gray-500 tracking-widest font-bold">Live Threat Feeds</p>
+                            <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">CISA KEV</div>
+                                <div class="text-[10px] text-gray-400">Known Exploited Catalog</div>
+                            </a>
+                            <a href="https://github.com/advisories" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">GITHUB ADVISORIES</div>
+                                <div class="text-[10px] text-gray-400">Global Security Database</div>
+                            </a>
+                            <a href="https://www.exploit-db.com/" target="_blank" class="intel-link group">
+                                <div class="text-white group-hover:text-[var(--hud-primary)] font-bold">EXPLOIT DB</div>
+                                <div class="text-[10px] text-gray-400">Offensive Security Archive</div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Data Block -->
+                    <div class="mt-auto pt-6 border-t border-gray-800">
+                        <div class="flex gap-1 mb-1">
+                            <div class="h-1 w-1/3 bg-[var(--hud-primary)]"></div>
+                            <div class="h-1 w-1/4 bg-[var(--hud-secondary)] opacity-50"></div>
+                            <div class="h-1 w-full bg-gray-800"></div>
+                        </div>
+                        <p class="text-[9px] text-gray-600 font-mono text-justify leading-tight">
+                            WARNING: UNAUTHORIZED ACCESS TO CLASSIFIED SECTORS IS STRICTLY PROHIBITED. ALL ACTIVITIES LOGGED BY ORBITAL COMMAND.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Controls -->
-            <div class="flex flex-col md:flex-row gap-4 w-full justify-center items-center mt-2">
-                <div class="text-xs text-gray-500 font-mono hidden md:block absolute left-10 bottom-10 text-left">
-                    <p>PROTOCOL: HTTP/1.1</p>
-                    <p>PORT: 80 (OPEN)</p>
-                    <p>SECURE: FALSE</p>
-                </div>
-
-                <button onclick="randomizeMeme()" class="cyber-btn px-8 py-4 text-xl font-bold w-full md:w-auto">
-                    [ ACCESS NEXT FILE ]
-                </button>
-            </div>
-        </div>
-
-        <!-- Resources Section -->
-        <div class="cyber-box w-full p-6 relative">
-            <h2 class="text-xl md:text-2xl text-white font-bold mb-4 border-l-4 border-[var(--neon-cyan)] pl-4 tracking-wider">
-                EXTERNAL INTELLIGENCE
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-mono text-gray-300">
-                <div class="space-y-3">
-                    <p class="text-gray-500 text-xs uppercase mb-2">Vulnerability Databases</p>
-                    <a href="https://osv.dev/" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> OSV.DEV // Open Source Vulnerabilities
-                    </a>
-                    <a href="https://nvd.nist.gov/" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> NIST NVD // National Database
-                    </a>
-                    <a href="https://cve.mitre.org/" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> MITRE CVE // Common Exposures
-                    </a>
-                </div>
-                <div class="space-y-3">
-                    <p class="text-gray-500 text-xs uppercase mb-2">Threat Intelligence</p>
-                    <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> CISA KEV // Exploited Catalog
-                    </a>
-                    <a href="https://github.com/advisories" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> GITHUB ADVISORY DB
-                    </a>
-                    <a href="https://www.exploit-db.com/" target="_blank" class="cyber-link block">
-                        <span class="text-[var(--neon-green)] mr-2">[+]</span> EXPLOIT DB // Exploit Database
-                    </a>
-                </div>
-            </div>
         </div>
 
     </main>
 
     <!-- Floating Footer -->
-    <footer class="fixed bottom-0 left-0 w-full bg-black/90 backdrop-blur-sm border-t border-[var(--neon-cyan)] p-4 text-xs text-gray-400 font-mono z-50 flex justify-center items-center shadow-[0_-5px_20px_rgba(0,243,255,0.1)]">
-        <p>
-            CONTACT: <a href="mailto:contact@vuln.management" class="text-[var(--neon-pink)] hover:text-white transition-colors">contact@vuln.management</a> 
-            <span class="mx-2 text-gray-600">|</span> 
-            &copy; 2025 VULN.MANAGEMENT
-        </p>
+    <footer class="fixed bottom-0 left-0 w-full bg-[#030508]/95 backdrop-blur-md border-t border-gray-800 p-3 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center text-xs font-mono text-gray-500">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-[var(--hud-primary)] blink"></div>
+                <span>STATUS: MONITORING</span>
+            </div>
+            <p>
+                <a href="mailto:contact@vuln.management" class="text-gray-300 hover:text-[var(--hud-primary)] transition-colors">contact@vuln.management</a> 
+                <span class="mx-2 opacity-30">|</span> 
+                &copy; 2025 VULN.MANAGEMENT
+            </p>
+        </div>
     </footer>
 
     <script>
         // =================================================================
-        // CONFIGURATION: SYSTEM SETTINGS
+        // CONFIGURATION
         // =================================================================
-        // We now generate filenames dynamically: memes-1.jpg, memes-2.jpg, etc.
         const memeConfig = {
             folder: "images/photos/",
             prefix: "memes-",
             extension: ".jpg",
-            totalImages: 39 // <--- UPDATE THIS to the actual number of meme files you have
+            totalImages: 39 // <--- UPDATE THIS if needed
         };
         
         // =================================================================
         // SYSTEM LOGIC
         // =================================================================
 
-        const imgElement = document.getElementById('meme-display');
-        const loader = document.getElementById('loader');
-        const progressBar = document.getElementById('progress-bar');
-        const errorMsg = document.getElementById('error-msg');
-        const targetId = document.getElementById('target-id');
-        const memUsage = document.getElementById('mem-usage');
+        const els = {
+            img: document.getElementById('meme-display'),
+            loader: document.getElementById('loader'),
+            error: document.getElementById('error-msg'),
+            targetId: document.getElementById('target-id'),
+            scanner: document.getElementById('scanner'),
+            statLat: document.getElementById('stat-lat'),
+            statLon: document.getElementById('stat-lon'),
+            memUsage: document.getElementById('mem-usage')
+        };
 
         let isAnimating = false;
 
-        function updateSystemStats() {
-            // Randomize memory usage stat for flavor
-            const usage = Math.floor(Math.random() * 40) + 30;
-            memUsage.innerText = `${usage}TB`;
-        }
-
-        function triggerGlitchEffect() {
-            // Simple visual glitch by slightly shaking the container
-            const viewport = document.getElementById('image-viewport');
-            viewport.style.transform = `translate(${Math.random()*4-2}px, ${Math.random()*4-2}px)`;
-            setTimeout(() => { viewport.style.transform = 'none'; }, 100);
+        function updateRandomStats() {
+            // Generate random coordinates for flavor
+            els.statLat.innerText = (Math.random() * 180 - 90).toFixed(4);
+            els.statLon.innerText = (Math.random() * 360 - 180).toFixed(4);
+            els.memUsage.innerText = Math.floor(Math.random() * 20 + 80) + "%";
         }
 
         function randomizeMeme() {
@@ -372,67 +360,56 @@
             isAnimating = true;
 
             // 1. Reset UI
-            imgElement.classList.add('hidden');
-            errorMsg.classList.add('hidden');
-            loader.classList.remove('hidden');
-            progressBar.style.width = '0%';
-            targetId.innerText = 'SCANNING...';
-            targetId.classList.remove('text-cyan-400');
-            targetId.classList.add('text-yellow-500');
+            els.img.classList.add('hidden');
+            els.error.classList.add('hidden');
+            els.loader.classList.remove('hidden');
+            els.scanner.classList.remove('hidden'); // Show scanner beam
+            
+            els.targetId.innerText = 'ID: SCANNING_SECTOR...';
+            els.targetId.style.color = 'var(--hud-secondary)';
 
-            // 2. Simulate "Hacking/Loading" delay
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.floor(Math.random() * 20);
-                if (progress > 100) progress = 100;
-                progressBar.style.width = `${progress}%`;
-                triggerGlitchEffect();
-
-                if (progress === 100) {
-                    clearInterval(interval);
-                    showMeme();
-                }
-            }, 100);
+            // 2. Simulate Scan Delay (1.2s)
+            setTimeout(() => {
+                showMeme();
+            }, 1200);
         }
 
         function showMeme() {
             // 3. Generate Random Filename
-            // Pick a number between 1 and totalImages
             const index = Math.floor(Math.random() * memeConfig.totalImages) + 1;
             const filename = `${memeConfig.prefix}${index}${memeConfig.extension}`;
             
             // 4. Load Image
-            // Full path: images/photos/memes-N.jpg
-            imgElement.src = `${memeConfig.folder}${filename}`;
+            els.img.src = `${memeConfig.folder}${filename}`;
             
-            imgElement.onload = () => {
-                loader.classList.add('hidden');
-                imgElement.classList.remove('hidden');
+            els.img.onload = () => {
+                els.loader.classList.add('hidden');
+                els.scanner.classList.add('hidden'); // Hide beam
+                els.img.classList.remove('hidden');
                 
                 // Update stats
-                targetId.innerText = `IMG_0x${index.toString(16).toUpperCase()}`;
-                targetId.classList.remove('text-yellow-500');
-                targetId.classList.add('text-cyan-400');
-                updateSystemStats();
+                els.targetId.innerText = `ID: OBJ_${index.toString(16).toUpperCase().padStart(4, '0')}`;
+                els.targetId.style.color = 'var(--hud-primary)';
+                updateRandomStats();
                 
                 isAnimating = false;
             };
 
-            imgElement.onerror = () => {
-                loader.classList.add('hidden');
-                errorMsg.classList.remove('hidden');
-                targetId.innerText = 'ERR_404';
-                targetId.classList.add('text-red-500');
+            els.img.onerror = () => {
+                els.loader.classList.add('hidden');
+                els.scanner.classList.add('hidden');
+                els.error.classList.remove('hidden');
+                
+                els.targetId.innerText = 'ID: TARGET_LOST';
+                els.targetId.style.color = 'var(--hud-alert)';
                 isAnimating = false;
                 
-                // Debug info
-                console.error(`Failed to load ${memeConfig.folder}${filename}. Check if the file exists and 'totalImages' is correct.`);
+                console.error(`Failed to load ${memeConfig.folder}${filename}.`);
             };
         }
 
         // Initialize on load
         window.onload = () => {
-            // First run
             randomizeMeme();
         };
 

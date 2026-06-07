@@ -195,7 +195,15 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div id="archive-view" class="hidden w-full hud-panel p-6 mb-6">
+            <h2 class="text-[var(--hud-primary)] font-syncopate text-lg mb-4 border-b border-gray-800 pb-2 flex justify-between items-center">
+                <span>Threat Archive Database</span>
+                <button onclick="toggleArchive()" class="text-xs border border-gray-600 px-2 py-1 text-gray-400 hover:text-white transition-colors">CLOSE</button>
+            </h2>
+            <div id="archive-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+        </div>
+
+        <div id="main-scanner-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Left Col: Main Viewer (Span 2) -->
             <div class="lg:col-span-2 flex flex-col gap-4">
@@ -239,9 +247,14 @@
                 </div>
 
                 <!-- Controls -->
-                <button onclick="randomizeMeme()" class="space-btn w-full py-5 text-lg md:text-xl font-bold tracking-widest">
-                    Initialize Next Scan
-                </button>
+                <div class="flex gap-4">
+                    <button onclick="randomizeMeme()" class="space-btn flex-grow py-5 text-lg md:text-xl font-bold tracking-widest">
+                        Initialize Next Scan
+                    </button>
+                    <button onclick="toggleArchive()" class="space-btn px-4 md:px-8 py-5 text-sm md:text-base font-bold tracking-widest text-gray-400 border-gray-600 hover:text-[var(--hud-primary)] hover:border-[var(--hud-primary)] flex-shrink-0">
+                        ARCHIVE
+                    </button>
+                </div>
             </div>
 
             <!-- Right Col: Intelligence Data -->
@@ -343,10 +356,89 @@
             scanner: document.getElementById('scanner'),
             statLat: document.getElementById('stat-lat'),
             statLon: document.getElementById('stat-lon'),
-            memUsage: document.getElementById('mem-usage')
+            memUsage: document.getElementById('mem-usage'),
+            scannerView: document.getElementById('main-scanner-view'),
+            archiveView: document.getElementById('archive-view'),
+            archiveGrid: document.getElementById('archive-grid')
         };
 
         let isAnimating = false;
+
+        function toggleArchive() {
+            if (els.archiveView.classList.contains('hidden')) {
+                els.scannerView.classList.add('hidden');
+                els.archiveView.classList.remove('hidden');
+                buildArchive();
+            } else {
+                els.archiveView.classList.add('hidden');
+                els.scannerView.classList.remove('hidden');
+            }
+        }
+
+        function buildArchive() {
+            if (els.archiveGrid.children.length > 0) return; // already built
+            for (let i = 1; i <= memeConfig.totalImages; i++) {
+                const filename = `${memeConfig.prefix}${i}${memeConfig.extension}`;
+                const src = `${memeConfig.folder}${filename}`;
+                
+                const card = document.createElement('div');
+                card.className = 'cursor-pointer transition-transform hover:scale-105 group relative bg-black border border-gray-800 hover:border-[var(--hud-primary)]';
+                card.onclick = () => {
+                    toggleArchive();
+                    loadSpecificMeme(i);
+                };
+                
+                card.innerHTML = `
+                    <div class="aspect-square overflow-hidden bg-black">
+                        <img src="${src}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" loading="lazy" alt="Archive Image" onerror="this.style.display='none'">
+                    </div>
+                    <div class="absolute bottom-0 w-full bg-black/80 text-center font-mono text-[10px] text-[var(--hud-secondary)] py-1 border-t border-gray-800 group-hover:border-[var(--hud-primary)]">
+                        OBJ_${i.toString(16).toUpperCase().padStart(4, '0')}
+                    </div>
+                `;
+                els.archiveGrid.appendChild(card);
+            }
+        }
+
+        function loadSpecificMeme(index) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            els.img.classList.add('hidden');
+            els.error.classList.add('hidden');
+            els.loader.classList.remove('hidden');
+            els.scanner.classList.remove('hidden');
+            
+            els.targetId.innerText = 'ID: RETRIEVING_RECORD...';
+            els.targetId.style.color = 'var(--hud-secondary)';
+
+            setTimeout(() => {
+                const filename = `${memeConfig.prefix}${index}${memeConfig.extension}`;
+                els.img.src = `${memeConfig.folder}${filename}`;
+                
+                els.img.onload = () => {
+                    els.loader.classList.add('hidden');
+                    els.scanner.classList.add('hidden');
+                    els.img.classList.remove('hidden');
+                    
+                    els.targetId.innerText = `ID: OBJ_${index.toString(16).toUpperCase().padStart(4, '0')}`;
+                    els.targetId.style.color = 'var(--hud-primary)';
+                    updateRandomStats();
+                    
+                    isAnimating = false;
+                };
+
+                els.img.onerror = () => {
+                    els.loader.classList.add('hidden');
+                    els.scanner.classList.add('hidden');
+                    els.error.classList.remove('hidden');
+                    
+                    els.targetId.innerText = 'ID: TARGET_LOST';
+                    els.targetId.style.color = 'var(--hud-alert)';
+                    isAnimating = false;
+                };
+            }, 800);
+        }
 
         function updateRandomStats() {
             // Generate random coordinates for flavor

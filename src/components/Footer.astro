@@ -1,0 +1,81 @@
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div>
+      <p class="footer-mark">vuln.management</p>
+      <p class="footer-note">Risk does not fit neatly in a pie chart.</p>
+    </div>
+    <div class="footer-links" aria-label="Footer navigation">
+      <a href="/advisories/">Advisories</a>
+      <a href="/posts/">Posts</a>
+      <a href="/memes/">Memes</a>
+      <a href="/rss.xml">RSS</a>
+    </div>
+    <div class="footer-meta">
+      <a href="mailto:contact@vuln.management">contact@vuln.management</a>
+      <span>STATIC BUILD // NO TRACKING // FEWER DASHBOARDS</span>
+      <span>© {new Date().getFullYear()} vuln.management</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: 3rem;
+    border-top: 1px solid var(--line);
+    background: var(--paper-deep);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer-mark {
+    margin: 0;
+    font-family: var(--mono);
+    font-weight: 800;
+  }
+
+  .footer-note {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+    font-family: var(--serif);
+    font-size: 1.25rem;
+  }
+
+  .footer-links,
+  .footer-meta {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+  }
+
+  .footer-links a {
+    width: max-content;
+    text-decoration: none;
+  }
+
+  .footer-meta {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+  }
+
+  .footer-meta a {
+    color: var(--ink);
+    text-transform: none;
+  }
+
+  @media (max-width: 700px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-meta {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

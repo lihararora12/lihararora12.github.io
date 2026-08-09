@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postUrl } from '../lib/content';
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+  index?: number;
+}
+
+const { entry, index = 0 } = Astro.props;
+const date = entry.data.publishedAt.toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<a class="editorial-card" href={postUrl(entry)}>
+  <div class="card-meta">
+    <span class="card-index">{String(index + 1).padStart(2, '0')}</span>
+    <span>{entry.data.eyebrow}</span>
+  </div>
+  <h3>{entry.data.title}</h3>
+  <p>{entry.data.description}</p>
+  <div class="card-footer">
+    <div class="tag-row">
+      {entry.data.tags.slice(0, 2).map((tag) => <span class="tag">{tag}</span>)}
+    </div>
+    <span class="card-meta">{date} · {entry.data.readingTime}</span>
+  </div>
+</a>

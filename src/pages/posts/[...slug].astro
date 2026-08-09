@@ -1,0 +1,80 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isPublished } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('posts')).filter(isPublished);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const date = entry.data.publishedAt.toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout
+  title={`${entry.data.title} — vuln.management`}
+  description={entry.data.description}
+  article={true}
+>
+  <article class="article-shell">
+    <header class="article-header">
+      <p class="eyebrow">{entry.data.eyebrow}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="article-deck">{entry.data.description}</p>
+      <div class="article-meta">
+        <span>{date}</span>
+        <span>{entry.data.readingTime}</span>
+        <span>vuln.management</span>
+      </div>
+      <div class="tag-row article-tags">
+        {entry.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+      </div>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+  <aside class="article-cta">
+    <div>
+      <p class="eyebrow">Keep reading</p>
+      <h2>More signal. Less queue theater.</h2>
+    </div>
+    <a class="button" href="/posts/">Browse all posts</a>
+  </aside>
+</BaseLayout>
+
+<style>
+  .article-tags { margin-top: 1.4rem; }
+
+  .article-cta {
+    display: flex;
+    width: min(calc(100% - 2rem), 70rem);
+    margin: 0 auto 6rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--acid);
+    color: #111714;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .article-cta h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; letter-spacing: -0.04em; }
+  .article-cta .eyebrow { color: #38402d; }
+
+  @media (max-width: 600px) {
+    .article-cta { align-items: flex-start; flex-direction: column; }
+  }
+</style>

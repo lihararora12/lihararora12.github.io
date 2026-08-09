@@ -1,0 +1,142 @@
+---
+interface FlowStep {
+  label: string;
+  detail: string;
+}
+
+interface Props {
+  eli5: string;
+  flow: FlowStep[];
+}
+
+const { eli5, flow } = Astro.props;
+---
+
+<section class="advisory-explainer" aria-label="Plain-language and visual explanation">
+  <div class="eli5">
+    <span>ELI5</span>
+    <div>
+      <h2>Explain it like I’m five</h2>
+      <p>{eli5}</p>
+    </div>
+  </div>
+
+  <div class="flow-panel">
+    <div class="flow-header">
+      <span>SIMPLIFIED_ATTACK_PATH</span>
+      <span>{String(flow.length).padStart(2, '0')} STEPS</span>
+    </div>
+    <ol class="flow">
+      {flow.map((step, index) => (
+        <li>
+          <span class="step-number">{String(index + 1).padStart(2, '0')}</span>
+          <strong>{step.label}</strong>
+          <p>{step.detail}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .advisory-explainer {
+    display: grid;
+    gap: 1rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eli5 {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1.2rem;
+    padding: 1.15rem;
+    border: 1px solid color-mix(in srgb, var(--acid) 44%, var(--line));
+    background: color-mix(in srgb, var(--acid) 7%, var(--surface));
+  }
+
+  .eli5 > span {
+    display: grid;
+    width: 4rem;
+    height: 4rem;
+    place-content: center;
+    border: 1px solid var(--acid);
+    color: var(--acid);
+    font: 800 0.78rem var(--mono);
+    letter-spacing: 0.08em;
+  }
+
+  .eli5 h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.025em;
+  }
+
+  .eli5 p { max-width: 50rem; margin: 0; color: var(--muted); line-height: 1.55; }
+
+  .flow-panel { overflow: hidden; border: 1px solid var(--line-strong); background: var(--surface); }
+
+  .flow-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--signal-dark);
+    font: 700 0.61rem var(--mono);
+    letter-spacing: 0.08em;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .flow-panel:has(.flow li:nth-child(3):last-child) .flow { --steps: 3; }
+  .flow-panel:has(.flow li:nth-child(4):last-child) .flow { --steps: 4; }
+  .flow-panel:has(.flow li:nth-child(5):last-child) .flow { --steps: 5; }
+
+  .flow li {
+    position: relative;
+    min-height: 10rem;
+    padding: 1rem 1.3rem 1rem 1rem;
+    border-right: 1px solid var(--line);
+  }
+
+  .flow li:last-child { border-right: 0; }
+
+  .flow li:not(:last-child)::after {
+    position: absolute;
+    top: 50%;
+    right: -0.55rem;
+    z-index: 2;
+    display: grid;
+    width: 1.1rem;
+    height: 1.1rem;
+    place-content: center;
+    border: 1px solid var(--signal);
+    background: var(--paper-deep);
+    color: var(--signal);
+    content: "→";
+    font: 700 0.7rem var(--mono);
+    transform: translateY(-50%);
+  }
+
+  .step-number { display: block; margin-bottom: 1.4rem; color: var(--signal-dark); font: 700 0.62rem var(--mono); }
+  .flow strong { display: block; font-size: 0.88rem; line-height: 1.2; }
+  .flow p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.4; }
+
+  @media (max-width: 760px) {
+    .flow { grid-template-columns: 1fr; }
+    .flow li { min-height: auto; padding: 1rem; border-right: 0; border-bottom: 1px solid var(--line); }
+    .flow li:last-child { border-bottom: 0; }
+    .flow li:not(:last-child)::after { top: auto; right: 50%; bottom: -0.55rem; content: "↓"; transform: translateX(50%); }
+  }
+
+  @media (max-width: 520px) {
+    .eli5 { grid-template-columns: 1fr; }
+    .eli5 > span { width: auto; height: 2rem; }
+  }
+</style>

@@ -1,0 +1,135 @@
+---
+const path = Astro.url.pathname;
+const links = [
+  { href: '/advisories/', label: 'Advisories' },
+  { href: '/posts/', label: 'Posts' },
+  { href: '/memes/', label: 'Memes' },
+  { href: '/about/', label: 'About' },
+];
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="wordmark" href="/" aria-label="vuln.management home">
+      <span class="wordmark-mark" aria-hidden="true">VM</span>
+      <span>vuln.management</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
+        Menu
+      </button>
+      <div class="nav-links" id="nav-links">
+        {links.map((link) => (
+          <a class:list={{ primary: link.href === '/advisories/' }} href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const navToggle = document.querySelector<HTMLButtonElement>('#nav-toggle');
+  const navLinks = document.querySelector<HTMLElement>('#nav-links');
+  navToggle?.addEventListener('click', () => {
+    const open = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!open));
+    navLinks?.classList.toggle('open', !open);
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-inner {
+    display: grid;
+    min-height: 4.4rem;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: max-content;
+    font-family: var(--mono);
+    font-size: 0.87rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+
+  .wordmark:hover { color: var(--ink); }
+
+  .wordmark-mark {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-content: center;
+    border: 1px solid var(--signal);
+    color: var(--signal);
+    font-size: 0.58rem;
+    letter-spacing: 0;
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 0.2rem; }
+
+  .nav-links a {
+    padding: 0.45rem 0.7rem;
+    border-radius: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 730;
+    text-decoration: none;
+  }
+
+  .nav-links a:hover,
+  .nav-links a[aria-current='page'] { background: var(--surface); color: var(--ink); }
+
+  .nav-links a.primary {
+    border: 1px solid color-mix(in srgb, var(--signal) 42%, var(--line));
+    color: var(--signal-dark);
+  }
+
+  .nav-toggle {
+    display: none;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 750;
+  }
+
+  @media (max-width: 700px) {
+    .nav-toggle { display: inline-flex; }
+
+    .nav-links {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0.65rem;
+      display: none;
+      width: min(15rem, calc(100vw - 1.3rem));
+      padding: 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--surface-solid);
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links.open { display: grid; }
+    .nav-links a { padding: 0.7rem; }
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Finding not found — vuln.management" description="This exposure could not be reproduced.">
+  <section class="not-found shell">
+    <p class="eyebrow">HTTP 404 · Inconclusive</p>
+    <h1>Finding not found.</h1>
+    <p class="lede">We could not reproduce the requested page. It may have been remediated, moved, or accepted without sufficient documentation.</p>
+    <div><a class="button" href="/">Return home</a><a class="button secondary" href="/memes/">Try a meme instead</a></div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found { display: grid; min-height: 72vh; place-content: center; padding-block: 5rem; text-align: center; }
+  .not-found .eyebrow { justify-content: center; }
+  .not-found h1 { margin: 0; font-family: var(--serif); font-size: clamp(4rem, 12vw, 9rem); font-weight: 500; letter-spacing: -0.07em; line-height: 0.9; }
+  .not-found .lede { margin: 2rem auto; }
+  .not-found > div { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.7rem; }
+</style>

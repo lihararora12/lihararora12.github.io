@@ -1,0 +1,583 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { advisoryUrl } from '../lib/content';
+
+interface Props {
+  advisories: CollectionEntry<'advisories'>[];
+}
+
+const { advisories } = Astro.props;
+
+const slugify = (value: string) => value
+  .normalize('NFKD')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)/g, '');
+
+const unique = (values: string[]) => [...new Set(values)].sort((a, b) => a.localeCompare(b));
+const priorityLabels = { 'act-now': 'Act now', high: 'High priority', watch: 'Watch' };
+const facets = [
+  { key: 'technology', label: 'Technology', values: unique(advisories.flatMap(({ data }) => data.technologies)) },
+  { key: 'weakness', label: 'Weakness', values: unique(advisories.flatMap(({ data }) => data.weaknesses)) },
+  { key: 'impact', label: 'Impact', values: unique(advisories.flatMap(({ data }) => data.impacts)) },
+  { key: 'evidence', label: 'Evidence', values: unique(advisories.flatMap(({ data }) => data.evidence)) },
+  { key: 'action', label: 'Action', values: unique(advisories.flatMap(({ data }) => data.actions)) },
+];
+
+const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const shortDateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+const fullDate = (entry: CollectionEntry<'advisories'>) =>
+  entry.data.advisoryDateLabel ?? dateFormatter.format(entry.data.advisoryDate);
+const shortDate = (entry: CollectionEntry<'advisories'>) =>
+  entry.data.advisoryDateLabel ?? shortDateFormatter.format(entry.data.advisoryDate);
+const resultData = (entry: CollectionEntry<'advisories'>) => ({
+  search: [
+    entry.data.identifier,
+    entry.data.vendor,
+    entry.data.product,
+    entry.data.title,
+    entry.data.summary,
+    entry.data.status,
+    ...entry.data.technologies,
+    ...entry.data.cwes,
+    ...entry.data.weaknesses,
+    ...entry.data.impacts,
+    ...entry.data.evidence,
+    ...entry.data.actions,
+  ].join(' ').toLowerCase(),
+  priority: entry.data.priority,
+  technology: entry.data.technologies.map(slugify).join(' '),
+  weakness: entry.data.weaknesses.map(slugify).join(' '),
+  impact: entry.data.impacts.map(slugify).join(' '),
+  evidence: entry.data.evidence.map(slugify).join(' '),
+  action: entry.data.actions.map(slugify).join(' '),
+});
+
+const groups = new Map<string, CollectionEntry<'advisories'>[]>();
+for (const entry of advisories) {
+  const key = entry.data.advisoryDate.toISOString().slice(0, 7);
+  groups.set(key, [...(groups.get(key) ?? []), entry]);
+}
+---
+
+<div class="advisory-explorer" data-explorer>
+  <div class="explorer-topline">
+    <h1>Advisory explorer</h1>
+    <p><strong data-result-count>{advisories.length}</strong> of {advisories.length} advisories</p>
+  </div>
+
+  <form class="search-row" role="search" data-search-form>
+    <label class="search-box">
+      <span class="sr-only">Search advisories</span>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+      <input
+        type="search"
+        placeholder="Search CVE, vendor, product, or technology"
+        autocomplete="off"
+        data-search-input
+      />
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+    <div class="view-switcher" aria-label="Results view">
+      <button type="button" data-view="timeline" aria-pressed="true">Timeline</button>
+      <button type="button" data-view="compact" aria-pressed="false">Compact</button>
+    </div>
+  </form>
+
+  <div class="quick-row" aria-label="Quick views">
+    <span>Quick views</span>
+    <button type="button" data-preset="act-now" aria-pressed="false">Act now</button>
+    <button type="button" data-preset="ai-agents" aria-pressed="false">AI &amp; agents</button>
+    <button type="button" data-preset="known-exploited" aria-pressed="false">Known exploited</button>
+    <button type="button" class="clear-all" data-clear hidden>Clear filters</button>
+  </div>
+
+  <details class="filter-drawer">
+    <summary>
+      <span>Filter by signal</span>
+      <span class="active-filter-count" data-filter-count>0 active</span>
+    </summary>
+    <div class="facet-grid">
+      {facets.map((facet) => (
+        <fieldset>
+          <legend>{facet.label}</legend>
+          <div class="facet-options">
+            {facet.values.map((value) => (
+              <button
+                type="button"
+                data-filter-group={facet.key}
+                data-filter-value={slugify(value)}
+                aria-pressed="false"
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+    </div>
+  </details>
+
+  <p class="results-status sr-only" aria-live="polite" data-results-status></p>
+
+  <div class="timeline" data-timeline-view>
+    {Array.from(groups.values()).map((entries) => (
+      <section class="timeline-month" data-month-group>
+        <h2>{monthFormatter.format(entries[0].data.advisoryDate)}</h2>
+        <div class="timeline-list">
+          {entries.map((entry) => {
+            const data = resultData(entry);
+            return (
+              <article
+                class="timeline-item"
+                data-result
+                data-search={data.search}
+                data-priority={data.priority}
+                data-technology={data.technology}
+                data-weakness={data.weakness}
+                data-impact={data.impact}
+                data-evidence={data.evidence}
+                data-action={data.action}
+              >
+                <div class="timeline-date">
+                  <time datetime={entry.data.advisoryDate.toISOString().slice(0, 10)}>{shortDate(entry)}</time>
+                  <span class:list={['priority-dot', entry.data.priority]} aria-hidden="true"></span>
+                </div>
+                <a class="timeline-card" href={advisoryUrl(entry)}>
+                  <div class="item-meta">
+                    <code>{entry.data.identifier}</code>
+                    <span>{entry.data.status}</span>
+                  </div>
+                  <h3>{entry.data.title}</h3>
+                  <p>{entry.data.summary}</p>
+                  <div class="item-footer">
+                    <div class="result-tags" aria-label="Advisory tags">
+                      {entry.data.technologies.map((tag) => <span>{tag}</span>)}
+                      {entry.data.weaknesses.map((tag) => <span>{tag}</span>)}
+                    </div>
+                    <span class="read-link">Read advisory <span aria-hidden="true">→</span></span>
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <div class="compact-view" data-compact-view hidden>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Published</th>
+          <th scope="col">Advisory</th>
+          <th scope="col">Technology</th>
+          <th scope="col">Signal</th>
+          <th scope="col">Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        {advisories.map((entry) => {
+          const data = resultData(entry);
+          return (
+            <tr
+              data-result
+              data-search={data.search}
+              data-priority={data.priority}
+              data-technology={data.technology}
+              data-weakness={data.weakness}
+              data-impact={data.impact}
+              data-evidence={data.evidence}
+              data-action={data.action}
+            >
+              <td><time datetime={entry.data.advisoryDate.toISOString().slice(0, 10)}>{fullDate(entry)}</time></td>
+              <td>
+                <a href={advisoryUrl(entry)}>{entry.data.vendor} {entry.data.product}</a>
+                <code>{entry.data.identifier}</code>
+              </td>
+              <td>{entry.data.technologies.join(', ')}</td>
+              <td>{entry.data.status}</td>
+              <td><span class:list={['compact-priority', entry.data.priority]}>{priorityLabels[entry.data.priority]}</span></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" data-empty-state hidden>
+    <strong>Zero advisories found.</strong>
+    <p>Either the filters are too specific, or security has finally been solved. Probably the filters.</p>
+    <button type="button" data-clear>Reset the evidence</button>
+  </div>
+</div>
+
+<script>
+  const explorer = document.querySelector<HTMLElement>('[data-explorer]');
+
+  if (explorer) {
+    const searchInput = explorer.querySelector<HTMLInputElement>('[data-search-input]');
+    const searchForm = explorer.querySelector<HTMLFormElement>('[data-search-form]');
+    const resultCount = explorer.querySelector<HTMLElement>('[data-result-count]');
+    const resultsStatus = explorer.querySelector<HTMLElement>('[data-results-status]');
+    const filterCount = explorer.querySelector<HTMLElement>('[data-filter-count]');
+    const emptyState = explorer.querySelector<HTMLElement>('[data-empty-state]');
+    const timelineView = explorer.querySelector<HTMLElement>('[data-timeline-view]');
+    const compactView = explorer.querySelector<HTMLElement>('[data-compact-view]');
+    const timelineResults = Array.from(explorer.querySelectorAll<HTMLElement>('[data-timeline-view] [data-result]'));
+    const allResults = Array.from(explorer.querySelectorAll<HTMLElement>('[data-result]'));
+    const monthGroups = Array.from(explorer.querySelectorAll<HTMLElement>('[data-month-group]'));
+    const filterButtons = Array.from(explorer.querySelectorAll<HTMLButtonElement>('[data-filter-group]'));
+    const presetButtons = Array.from(explorer.querySelectorAll<HTMLButtonElement>('[data-preset]'));
+    const viewButtons = Array.from(explorer.querySelectorAll<HTMLButtonElement>('[data-view]'));
+    const clearButtons = Array.from(explorer.querySelectorAll<HTMLButtonElement>('[data-clear]'));
+    const filters = new Map<string, Set<string>>();
+    const validFilters = new Map<string, Set<string>>();
+    let view = 'timeline';
+
+    for (const button of filterButtons) {
+      const group = button.dataset.filterGroup;
+      const value = button.dataset.filterValue;
+      if (!group || !value) continue;
+      if (!validFilters.has(group)) validFilters.set(group, new Set());
+      validFilters.get(group)?.add(value);
+    }
+    validFilters.set('priority', new Set(['act-now', 'high', 'watch']));
+
+    const setFilter = (group: string, values: string[]) => {
+      const allowed = validFilters.get(group);
+      const clean = values.filter((value) => allowed?.has(value));
+      if (clean.length) filters.set(group, new Set(clean));
+      else filters.delete(group);
+    };
+
+    const activeFilterTotal = () =>
+      Array.from(filters.values()).reduce((total, values) => total + values.size, 0);
+
+    const matchesPreset = (name: string) => {
+      if (searchInput?.value.trim()) return false;
+      const expected: Record<string, Record<string, string[]>> = {
+        'act-now': { priority: ['act-now'] },
+        'ai-agents': { technology: ['ai', 'agent-workflows'] },
+        'known-exploited': { evidence: ['cisa-kev', 'vendor-confirmed-exploitation'] },
+      };
+      const preset = expected[name];
+      if (!preset || filters.size !== Object.keys(preset).length) return false;
+      return Object.entries(preset).every(([group, values]) => {
+        const active = filters.get(group);
+        return active?.size === values.length && values.every((value) => active.has(value));
+      });
+    };
+
+    const syncUrl = () => {
+      const params = new URLSearchParams();
+      const query = searchInput?.value.trim();
+      if (query) params.set('q', query);
+      for (const [group, values] of filters) params.set(group, Array.from(values).join(','));
+      if (view === 'compact') params.set('view', 'compact');
+      const queryString = params.toString();
+      history.replaceState({}, '', `${location.pathname}${queryString ? `?${queryString}` : ''}${location.hash}`);
+    };
+
+    const apply = (updateUrl = true) => {
+      const queryTokens = (searchInput?.value ?? '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let visible = 0;
+
+      for (const result of allResults) {
+        const matchesQuery = queryTokens.every((token) => (result.dataset.search ?? '').includes(token));
+        const matchesFilters = Array.from(filters.entries()).every(([group, values]) => {
+          const available = new Set((result.dataset[group] ?? '').split(' ').filter(Boolean));
+          return Array.from(values).some((value) => available.has(value));
+        });
+        result.hidden = !(matchesQuery && matchesFilters);
+      }
+
+      for (const result of timelineResults) if (!result.hidden) visible += 1;
+      for (const group of monthGroups) {
+        group.hidden = !Array.from(group.querySelectorAll<HTMLElement>('[data-result]')).some((result) => !result.hidden);
+      }
+
+      const active = activeFilterTotal();
+      if (resultCount) resultCount.textContent = String(visible);
+      if (resultsStatus) resultsStatus.textContent = `${visible} ${visible === 1 ? 'advisory' : 'advisories'} shown`;
+      if (filterCount) filterCount.textContent = `${active} active`;
+      if (emptyState) emptyState.hidden = visible !== 0;
+
+      for (const button of filterButtons) {
+        const group = button.dataset.filterGroup ?? '';
+        const value = button.dataset.filterValue ?? '';
+        button.setAttribute('aria-pressed', String(filters.get(group)?.has(value) ?? false));
+      }
+      for (const button of presetButtons) {
+        button.setAttribute('aria-pressed', String(matchesPreset(button.dataset.preset ?? '')));
+      }
+      for (const button of clearButtons) button.hidden = active === 0 && !searchInput?.value.trim();
+      if (updateUrl) syncUrl();
+    };
+
+    const setView = (nextView: string, updateUrl = true) => {
+      view = nextView === 'compact' ? 'compact' : 'timeline';
+      if (timelineView) timelineView.hidden = view !== 'timeline';
+      if (compactView) compactView.hidden = view !== 'compact';
+      for (const button of viewButtons) button.setAttribute('aria-pressed', String(button.dataset.view === view));
+      if (updateUrl) syncUrl();
+    };
+
+    const clearAll = () => {
+      filters.clear();
+      if (searchInput) searchInput.value = '';
+      apply();
+    };
+
+    for (const button of filterButtons) {
+      button.addEventListener('click', () => {
+        const group = button.dataset.filterGroup;
+        const value = button.dataset.filterValue;
+        if (!group || !value) return;
+        const values = new Set(filters.get(group) ?? []);
+        if (values.has(value)) values.delete(value);
+        else values.add(value);
+        setFilter(group, Array.from(values));
+        apply();
+      });
+    }
+
+    for (const button of presetButtons) {
+      button.addEventListener('click', () => {
+        const preset = button.dataset.preset;
+        const alreadyActive = matchesPreset(preset ?? '');
+        filters.clear();
+        if (searchInput) searchInput.value = '';
+        if (!alreadyActive && preset === 'act-now') setFilter('priority', ['act-now']);
+        if (!alreadyActive && preset === 'ai-agents') setFilter('technology', ['ai', 'agent-workflows']);
+        if (!alreadyActive && preset === 'known-exploited') {
+          setFilter('evidence', ['cisa-kev', 'vendor-confirmed-exploitation']);
+        }
+        apply();
+      });
+    }
+
+    for (const button of viewButtons) button.addEventListener('click', () => setView(button.dataset.view ?? 'timeline'));
+    for (const button of clearButtons) button.addEventListener('click', clearAll);
+    searchInput?.addEventListener('input', () => apply());
+    searchForm?.addEventListener('submit', (event) => event.preventDefault());
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target;
+      const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
+      if (event.key === '/' && !isTyping) {
+        event.preventDefault();
+        searchInput?.focus();
+      }
+    });
+
+    const params = new URLSearchParams(location.search);
+    if (searchInput) searchInput.value = params.get('q') ?? '';
+    for (const group of validFilters.keys()) setFilter(group, (params.get(group) ?? '').split(',').filter(Boolean));
+    setView(params.get('view') ?? 'timeline', false);
+    apply(false);
+  }
+</script>
+
+<style>
+  .advisory-explorer { --rail: 8.5rem; }
+
+  .explorer-topline {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .explorer-topline h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    letter-spacing: -0.055em;
+    line-height: 1;
+  }
+
+  .explorer-topline p {
+    margin: 0;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .explorer-topline strong { color: var(--signal); }
+
+  .search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .search-box {
+    display: grid;
+    min-height: 3.35rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--surface-solid);
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 10%, transparent);
+  }
+
+  .search-box svg { fill: none; stroke: var(--signal); stroke-linecap: round; stroke-width: 1.7; }
+  .search-box input { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); }
+  .search-box input::placeholder { color: var(--muted); opacity: 0.85; }
+  .search-box kbd { padding: 0.12rem 0.42rem; border: 1px solid var(--line); border-radius: 0.2rem; color: var(--muted); font-family: var(--mono); font-size: 0.65rem; }
+
+  .view-switcher {
+    display: flex;
+    padding: 0.25rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--surface-solid);
+  }
+
+  .view-switcher button,
+  .quick-row button,
+  .facet-options button,
+  .empty-state button {
+    border: 1px solid transparent;
+    border-radius: 0.22rem;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+  }
+
+  .view-switcher button { min-width: 5.7rem; padding: 0.6rem 0.75rem; text-transform: uppercase; }
+  .view-switcher button[aria-pressed="true"] { background: var(--signal); color: #071018; }
+
+  .quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.8rem 0;
+  }
+
+  .quick-row > span { margin-right: 0.25rem; color: var(--muted); font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; }
+  .quick-row button, .facet-options button { padding: 0.38rem 0.6rem; border-color: var(--line); }
+  .quick-row button:hover, .facet-options button:hover { border-color: var(--line-strong); color: var(--ink); }
+  .quick-row button[aria-pressed="true"], .facet-options button[aria-pressed="true"] { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 12%, transparent); color: var(--signal); }
+  .quick-row .clear-all { margin-left: auto; border: 0; color: var(--signal); text-decoration: underline; text-underline-offset: 0.2em; }
+
+  .filter-drawer { margin-bottom: 2rem; border: 1px solid var(--line); border-radius: 0.35rem; background: var(--surface); }
+  .filter-drawer summary { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; color: var(--ink); cursor: pointer; font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .filter-drawer summary::marker { color: var(--signal); }
+  .active-filter-count { color: var(--signal); font-size: 0.6rem; }
+
+  .facet-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; padding: 1rem; border-top: 1px solid var(--line); }
+  .facet-grid fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .facet-grid legend { margin-bottom: 0.6rem; color: var(--muted); font-family: var(--mono); font-size: 0.6rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+  .facet-options { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+  .timeline-month {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+
+  .timeline-month + .timeline-month { margin-top: 2.2rem; }
+  .timeline-month > h2 { margin: 0.25rem 0 0; color: var(--muted); font-family: var(--mono); font-size: 0.67rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .timeline-list { position: relative; display: grid; gap: 0.8rem; }
+  .timeline-list::before { position: absolute; top: 0; bottom: -2.2rem; left: -1.4rem; width: 1px; background: var(--line-strong); content: ""; }
+  .timeline-month:last-child .timeline-list::before { bottom: 0; }
+
+  .timeline-item { position: relative; display: grid; grid-template-columns: 5.8rem minmax(0, 1fr); gap: 0.85rem; }
+  .timeline-item::before { position: absolute; top: 1.35rem; left: -1.65rem; width: 0.48rem; height: 0.48rem; border: 2px solid var(--paper); border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 1px var(--line-strong); content: ""; }
+  .timeline-date { display: flex; align-items: center; justify-content: flex-end; gap: 0.55rem; align-self: start; padding-top: 1.05rem; color: var(--muted); font-family: var(--mono); font-size: 0.65rem; text-align: right; }
+  .priority-dot { width: 0.45rem; height: 0.45rem; flex: 0 0 auto; border-radius: 50%; background: var(--muted); }
+  .priority-dot.act-now { background: var(--alert); box-shadow: 0 0 0 3px color-mix(in srgb, var(--alert) 13%, transparent); }
+  .priority-dot.high { background: #efb545; }
+  .priority-dot.watch { background: var(--acid); }
+
+  .timeline-card {
+    display: block;
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--surface-solid) 90%, transparent));
+    text-decoration: none;
+    transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  }
+
+  .timeline-card:hover { border-color: var(--line-strong); color: var(--ink); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .item-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; color: var(--muted); font-family: var(--mono); font-size: 0.61rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .item-meta code { color: var(--signal); font-family: inherit; }
+  .timeline-card h3 { max-width: 35ch; margin: 0.65rem 0 0.4rem; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -0.035em; line-height: 1.15; }
+  .timeline-card > p { max-width: 55rem; margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+  .item-footer { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+  .result-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .result-tags span { padding: 0.2rem 0.42rem; border: 1px solid var(--line); border-radius: 0.2rem; color: var(--muted); font-family: var(--mono); font-size: 0.56rem; text-transform: uppercase; }
+  .read-link { flex: 0 0 auto; color: var(--signal); font-family: var(--mono); font-size: 0.62rem; font-weight: 750; text-transform: uppercase; }
+
+  .compact-view { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.35rem; background: var(--surface); }
+  .compact-view table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .compact-view th { color: var(--muted); font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.06em; text-align: left; text-transform: uppercase; }
+  .compact-view th, .compact-view td { padding: 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .compact-view tr:last-child td { border-bottom: 0; }
+  .compact-view tbody tr:hover { background: color-mix(in srgb, var(--signal) 4%, transparent); }
+  .compact-view td:first-child { min-width: 7.5rem; color: var(--muted); font-family: var(--mono); font-size: 0.62rem; }
+  .compact-view td:nth-child(2) { min-width: 14rem; }
+  .compact-view td:nth-child(3) { min-width: 9rem; }
+  .compact-view td a { display: block; font-weight: 700; text-decoration: none; }
+  .compact-view td code { display: block; margin-top: 0.2rem; color: var(--signal); font-family: var(--mono); font-size: 0.59rem; }
+  .compact-priority { display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+  .compact-priority::before { width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--muted); content: ""; }
+  .compact-priority.act-now::before { background: var(--alert); }
+  .compact-priority.high::before { background: #efb545; }
+  .compact-priority.watch::before { background: var(--acid); }
+
+  .empty-state { padding: 3rem 1rem; border: 1px dashed var(--line-strong); border-radius: 0.35rem; text-align: center; }
+  .empty-state strong { font-size: 1.2rem; }
+  .empty-state p { max-width: 35rem; margin: 0.5rem auto 1rem; color: var(--muted); font-size: 0.85rem; }
+  .empty-state button { padding: 0.55rem 0.75rem; border-color: var(--signal); color: var(--signal); text-transform: uppercase; }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) {
+    .facet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .advisory-explorer { --rail: 6rem; }
+    .timeline-item { grid-template-columns: 4.8rem minmax(0, 1fr); }
+  }
+
+  @media (max-width: 650px) {
+    .explorer-topline { align-items: start; flex-direction: column; }
+    .search-row { grid-template-columns: 1fr; }
+    .view-switcher button { width: 50%; }
+    .quick-row .clear-all { width: 100%; margin: 0.25rem 0 0; text-align: left; }
+    .facet-grid { grid-template-columns: 1fr; }
+    .timeline-month { display: block; }
+    .timeline-month > h2 { margin-bottom: 0.7rem; }
+    .timeline-list { padding-left: 1rem; }
+    .timeline-list::before { left: 0; }
+    .timeline-item { display: block; }
+    .timeline-item::before { top: 1.2rem; left: -1.22rem; }
+    .timeline-date { justify-content: flex-start; padding: 0 0 0.45rem; text-align: left; }
+    .item-footer { align-items: start; flex-direction: column; }
+    .read-link { align-self: flex-end; }
+    .search-box kbd { display: none; }
+  }
+</style>

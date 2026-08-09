@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdvisoryExplorer from '../../components/AdvisoryExplorer.astro';
+import { isPublished, newestAdvisoriesFirst } from '../../lib/content';
+
+const advisories = (await getCollection('advisories')).filter(isPublished).sort(newestAdvisoriesFirst);
+---
+
+<BaseLayout
+  title="Security advisories — vuln.management"
+  description="Concise, source-linked security advisories focused on what vulnerability managers need to decide and do next."
+>
+  <section class="section shell" aria-label="Security advisory explorer">
+    <AdvisoryExplorer advisories={advisories} />
+    <div class="disclaimer">
+      Independent summaries. Verify affected versions and fixes with the linked vendor guidance.
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .disclaimer { margin-top: 2rem; padding: 1rem 1.2rem; border-left: 3px solid var(--signal); color: var(--muted); font-size: 0.82rem; }
+
+</style>

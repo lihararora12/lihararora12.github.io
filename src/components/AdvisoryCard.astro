@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { advisoryUrl } from '../lib/content';
+
+interface Props {
+  entry: CollectionEntry<'advisories'>;
+}
+
+const { entry } = Astro.props;
+const labels = { 'act-now': 'Act now', high: 'High priority', watch: 'Watch' };
+const date = entry.data.advisoryDateLabel ?? entry.data.advisoryDate.toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<a class="advisory-card" href={advisoryUrl(entry)}>
+  <div class="card-meta">
+    <span>{entry.data.identifier}</span>
+    <span>Advisory {date}</span>
+  </div>
+  <h3>{entry.data.vendor} {entry.data.product}</h3>
+  <p>{entry.data.summary}</p>
+  <div class="card-footer">
+    <span class:list={['priority', entry.data.priority]}>{labels[entry.data.priority]}</span>
+    <span class="tag">{entry.data.status}</span>
+  </div>
+</a>

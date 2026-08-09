@@ -1,0 +1,74 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdvisoryFlow from '../../components/AdvisoryFlow.astro';
+import { isPublished } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('advisories')).filter(isPublished);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'advisories'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const published = entry.data.advisoryDateLabel ?? entry.data.advisoryDate.toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const due = entry.data.dueDate?.toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const labels = { 'act-now': 'Act now', high: 'High priority', watch: 'Watch' };
+---
+
+<BaseLayout title={`${entry.data.identifier}: ${entry.data.vendor} ${entry.data.product} — vuln.management`} description={entry.data.summary} article={true}>
+  <article class="article-shell">
+    <header class="article-header advisory-header">
+      <div class="advisory-kicker">
+        <span class:list={['priority', entry.data.priority]}>{labels[entry.data.priority]}</span>
+        <span>{entry.data.status}</span>
+      </div>
+      <p class="eyebrow">Advisory · {entry.data.identifier}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="article-deck">{entry.data.summary}</p>
+      <div class="article-meta"><span>Advisory published {published}</span><span>Independent summary</span></div>
+
+      <dl class="advisory-facts">
+        <div class="fact"><dt>Vendor</dt><dd>{entry.data.vendor}</dd></div>
+        <div class="fact"><dt>Product</dt><dd>{entry.data.product}</dd></div>
+        <div class="fact"><dt>Identifier / CWE</dt><dd>{entry.data.identifier}{entry.data.cwes.length > 0 && <><br />{entry.data.cwes.join(', ')}</>}</dd></div>
+        <div class="fact"><dt>Action timing</dt><dd>{due ?? 'Immediate'}</dd></div>
+      </dl>
+    </header>
+
+    <AdvisoryFlow eli5={entry.data.eli5} flow={entry.data.flow} />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <aside class="source-box">
+      <h2>Authoritative and supporting sources</h2>
+      <p>Open the vendor advisory before making a production change.</p>
+      <ul>
+        {entry.data.sourceLinks.map((source) => (
+          <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
+        ))}
+      </ul>
+    </aside>
+  </article>
+</BaseLayout>
+
+<style>
+  .advisory-header { position: relative; }
+  .advisory-kicker { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0.65rem 0.8rem; border: 1px solid var(--line); border-radius: 0.65rem; color: var(--muted); font: 0.68rem var(--mono); text-transform: uppercase; }
+</style>

@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About — vuln.management"
+  description="Why vuln.management exists and how its independent vulnerability management writing is produced."
+>
+  <section class="section shell about-grid">
+    <div class="about-copy">
+      <h1>Why this exists</h1>
+      <p>
+        Vulnerability management is often reduced to scanners, scores, patch deadlines, and a dashboard that is somehow always amber. The actual discipline is broader: asset knowledge, technical evidence, business context, ownership, safe change, verification, and learning.
+      </p>
+      <p>
+        AI agents make that work more interesting. They can discover, explain, prioritize, and remediate at machine speed. They also introduce new attack surfaces and make weak operating assumptions scale faster. This site explores both sides without treating autonomy as magic.
+      </p>
+      <h2>Editorial standard</h2>
+      <p>
+        Sources are linked. Facts, interpretations, and recommendations should remain distinguishable. Advisory pages do not replace vendor guidance. Corrections are welcome.
+      </p>
+    </div>
+    <aside class="about-aside">
+      <div>
+        <span>Topics</span>
+        <p>Vulnerability management<br />AI and security agents<br />Exposure and prioritization<br />Remediation systems<br />Advisory operations</p>
+      </div>
+      <div>
+        <span>Publishing model</span>
+        <p>Independent<br />Static site<br />No advertising<br />No behavioral tracking</p>
+      </div>
+      <a class="button" href="mailto:contact@vuln.management">Contact the editor</a>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: clamp(3rem, 9vw, 9rem); }
+  .about-copy { max-width: 46rem; font-family: var(--serif); font-size: 1.18rem; line-height: 1.75; }
+  .about-copy h1, .about-copy h2 { margin: 3rem 0 0.8rem; font-family: var(--sans); font-size: 1.8rem; letter-spacing: -0.04em; }
+  .about-copy h1:first-child { margin-top: 0; }
+  .about-aside { display: grid; align-content: start; gap: 2rem; }
+  .about-aside div { padding-top: 0.8rem; border-top: 1px solid var(--line-strong); }
+  .about-aside span { color: var(--signal-dark); font: 750 0.68rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .about-aside p { color: var(--muted); font-size: 0.9rem; }
+
+  @media (max-width: 750px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>

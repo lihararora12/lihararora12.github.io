@@ -1,0 +1,172 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import AdvisoryCard from '../components/AdvisoryCard.astro';
+import { isPublished, newestPostsFirst, newestAdvisoriesFirst, postUrl } from '../lib/content';
+
+const posts = (await getCollection('posts')).filter(isPublished).sort(newestPostsFirst);
+const advisories = (await getCollection('advisories')).filter(isPublished).sort(newestAdvisoriesFirst);
+const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
+---
+
+<BaseLayout>
+  <section class="hero shell">
+    <div class="hero-copy">
+      <p class="eyebrow">Vulnerability management / AI / agents</p>
+      <h1 class="display">Manage the risk. <em>Not just the queue.</em></h1>
+      <p class="lede">
+        Practical security thinking for systems that increasingly write, deploy, and operate themselves. Fewer buzzwords. Better evidence. Occasional memes.
+      </p>
+      <div class="hero-actions">
+        <a class="button" href="/advisories/">Check advisories</a>
+        <a class="button secondary" href={postUrl(featured)}>Read the latest post</a>
+      </div>
+    </div>
+
+    <aside class="signal-panel" aria-label="Current site signal">
+      <header><span>VM_CONSOLE</span><span class="online">ONLINE</span></header>
+      <dl>
+        <div><dt>Scope</dt><dd>AI × vulnerability management</dd></div>
+        <div><dt>Priority</dt><dd>Evidence over vibes</dd></div>
+        <div><dt>Backlog</dt><dd>Still undefeated</dd></div>
+      </dl>
+      <footer>NO CRITICAL PIE CHARTS DETECTED</footer>
+    </aside>
+  </section>
+
+  <div class="inventory">
+    <div class="shell">
+      <span><strong>{advisories.length}</strong> advisories</span>
+      <span><strong>{posts.length}</strong> posts</span>
+      <span><strong>39</strong> memes</span>
+      <span class="inventory-status">Status: context required</span>
+    </div>
+  </div>
+
+  <section class="section advisory-zone">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Advisory desk</p>
+          <h2>Known exploitation already skipped the prioritization meeting.</h2>
+        </div>
+        <a class="text-link" href="/advisories/">All advisories</a>
+      </div>
+      <div class="card-grid">
+        {advisories.slice(0, 3).map((entry) => <AdvisoryCard entry={entry} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule shell" aria-labelledby="latest-posts">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Latest posts</p>
+        <h2 id="latest-posts">For the work after the scanner finishes yelling.</h2>
+      </div>
+      <a class="text-link" href="/posts/">All posts</a>
+    </div>
+    <div class="card-grid">
+      {posts.slice(0, 3).map((entry, index) => <PostCard entry={entry} index={index} />)}
+    </div>
+  </section>
+
+  <section class="meme-band shell">
+    <div class="meme-frame" aria-hidden="true">
+      <img src="/images/photos/memes-24.jpg" alt="" loading="lazy" />
+    </div>
+    <div>
+      <p class="eyebrow">Compensating control</p>
+      <h2>When remediation is blocked, deploy humor.</h2>
+      <a class="button secondary" href="/memes/">Open the meme archive</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    min-height: min(47rem, calc(100vh - 4.4rem));
+    grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.55fr);
+    align-items: center;
+    gap: clamp(3rem, 8vw, 8rem);
+    padding-block: clamp(4.5rem, 9vw, 8rem);
+  }
+
+  .hero .display em { display: block; }
+  .hero .display {
+    max-width: 14ch;
+    font-size: clamp(3rem, 6.6vw, 6rem);
+    letter-spacing: -0.06em;
+    line-height: 0.96;
+    text-wrap: balance;
+  }
+  .hero-copy { min-width: 0; }
+  .hero .lede { margin: 1.6rem 0 0; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.8rem; }
+
+  .signal-panel {
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.35rem;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .signal-panel header,
+  .signal-panel footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.8rem;
+    background: color-mix(in srgb, var(--signal) 7%, var(--surface-solid));
+    color: var(--muted);
+    font: 700 0.61rem var(--mono);
+    letter-spacing: 0.08em;
+  }
+
+  .signal-panel footer { justify-content: flex-start; border-top: 1px solid var(--line); }
+  .online { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--acid); }
+  .online::before { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--acid); box-shadow: 0 0 12px var(--acid); content: ""; }
+  .signal-panel dl { margin: 0; padding: 0.5rem 0.8rem; }
+  .signal-panel dl div { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+  .signal-panel dl div:last-child { border-bottom: 0; }
+  .signal-panel dt { color: var(--signal-dark); font: 700 0.62rem var(--mono); text-transform: uppercase; }
+  .signal-panel dd { margin: 0; font-size: 0.86rem; font-weight: 650; }
+
+  .inventory { border-block: 1px solid var(--line); background: var(--paper-deep); }
+  .inventory .shell { display: flex; min-height: 3.6rem; align-items: center; gap: 2rem; color: var(--muted); font: 650 0.67rem var(--mono); text-transform: uppercase; }
+  .inventory strong { color: var(--signal-dark); font-size: 0.88rem; }
+  .inventory-status { margin-left: auto; color: var(--acid); }
+
+  .advisory-zone { background: color-mix(in srgb, var(--paper-deep) 75%, transparent); }
+
+  .meme-band {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    align-items: center;
+    gap: clamp(2rem, 6vw, 6rem);
+    margin-block: clamp(4rem, 8vw, 7rem);
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .meme-frame { max-height: 13rem; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+  .meme-frame img { width: 100%; height: 13rem; object-fit: cover; }
+  .meme-band h2 { max-width: 23ch; margin: 0 0 1.3rem; font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -0.045em; line-height: 1.05; }
+
+  @media (max-width: 800px) {
+    .hero { min-height: auto; grid-template-columns: 1fr; }
+    .signal-panel { max-width: 32rem; }
+  }
+
+  @media (max-width: 600px) {
+    .hero .display { max-width: 15ch; font-size: clamp(2.2rem, 11vw, 3.2rem); }
+    .inventory .shell { flex-wrap: wrap; gap: 0.65rem 1.2rem; padding-block: 0.8rem; }
+    .inventory-status { width: 100%; margin-left: 0; }
+    .meme-band { grid-template-columns: 1fr; }
+    .meme-frame { display: none; }
+  }
+</style>

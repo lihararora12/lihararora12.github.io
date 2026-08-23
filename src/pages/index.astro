@@ -3,11 +3,12 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import AdvisoryCard from '../components/AdvisoryCard.astro';
-import { isPublished, newestPostsFirst, newestAdvisoriesFirst, postUrl } from '../lib/content';
+import { isPublished, newestPostsFirst, newestAdvisoriesFirst } from '../lib/content';
+import { DETECTORS } from '../lib/secret-scanner/detectors';
 
 const posts = (await getCollection('posts')).filter(isPublished).sort(newestPostsFirst);
 const advisories = (await getCollection('advisories')).filter(isPublished).sort(newestAdvisoriesFirst);
-const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
+const detectorCount = DETECTORS.length;
 ---
 
 <BaseLayout>
@@ -20,7 +21,7 @@ const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
       </p>
       <div class="hero-actions">
         <a class="button" href="/advisories/">Check advisories</a>
-        <a class="button secondary" href={postUrl(featured)}>Read the latest post</a>
+        <a class="button secondary" href="/scanner/">Secret Scanner</a>
       </div>
     </div>
 
@@ -40,6 +41,7 @@ const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
       <span><strong>{advisories.length}</strong> advisories</span>
       <span><strong>{posts.length}</strong> posts</span>
       <span><strong>39</strong> memes</span>
+      <span><strong>{detectorCount}</strong> secret detectors</span>
       <span class="inventory-status">Status: context required</span>
     </div>
   </div>
@@ -57,6 +59,20 @@ const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
         {advisories.slice(0, 3).map((entry) => <AdvisoryCard entry={entry} />)}
       </div>
     </div>
+  </section>
+
+  <section class="tool-band shell" aria-labelledby="scanner-heading">
+    <div>
+      <p class="eyebrow">Browser tool / no upload</p>
+      <h2 id="scanner-heading">A secret scanner that keeps the source secret.</h2>
+      <p>Inspect configuration, source, and logs locally. Findings include redacted context, a reasoned risk score, and practical rotation guidance.</p>
+    </div>
+    <div class="tool-console" aria-hidden="true">
+      <span>SCAN_MODE</span><strong>LOCAL_ONLY</strong>
+      <span>DETECTORS</span><strong>{detectorCount}</strong>
+      <span>NETWORK</span><strong class="safe">DISABLED</strong>
+    </div>
+    <a class="button" href="/scanner/">Open scanner</a>
   </section>
 
   <section class="section section-rule shell" aria-labelledby="latest-posts">
@@ -142,6 +158,24 @@ const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
 
   .advisory-zone { background: color-mix(in srgb, var(--paper-deep) 75%, transparent); }
 
+  .tool-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(14rem, 0.55fr) auto;
+    align-items: center;
+    gap: clamp(1.5rem, 5vw, 4rem);
+    margin-block: clamp(3rem, 6vw, 5rem);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border: 1px solid var(--line-strong);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--signal) 7%, var(--surface)), var(--surface));
+    box-shadow: var(--shadow);
+  }
+
+  .tool-band h2 { max-width: 22ch; margin: 0; font-size: clamp(1.7rem, 3vw, 2.7rem); letter-spacing: -0.045em; line-height: 1.04; }
+  .tool-band p:not(.eyebrow) { max-width: 43rem; margin: 0.8rem 0 0; color: var(--muted); font-size: 0.9rem; }
+  .tool-console { display: grid; grid-template-columns: auto auto; gap: 0.45rem 1rem; color: var(--muted); font: 700 0.62rem var(--mono); }
+  .tool-console strong { color: var(--ink); text-align: right; }
+  .tool-console .safe { color: var(--acid); }
+
   .meme-band {
     display: grid;
     grid-template-columns: 14rem 1fr;
@@ -160,6 +194,9 @@ const featured = posts.find((entry) => entry.data.featured) ?? posts[0]!;
   @media (max-width: 800px) {
     .hero { min-height: auto; grid-template-columns: 1fr; }
     .signal-panel { max-width: 32rem; }
+    .tool-band { grid-template-columns: 1fr; }
+    .tool-console { max-width: 20rem; }
+    .tool-band .button { width: max-content; }
   }
 
   @media (max-width: 600px) {

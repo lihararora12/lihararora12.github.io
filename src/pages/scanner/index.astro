@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SecretScanner from '../../components/SecretScanner.astro';
+---
+
+<BaseLayout
+  title="Secret scanner — vuln.management"
+  description="Scan source code and configuration for exposed credentials entirely inside your browser, with contextual risk and remediation guidance."
+>
+  <section class="scanner-hero shell">
+    <div>
+      <p class="eyebrow">Local security tool</p>
+      <h1 class="page-title">Verify and triage secrets</h1>
+    </div>
+    <aside class="scanner-proof" aria-label="Scanner privacy model">
+      <span>PRIVACY_MODEL</span>
+      <strong>Browser only</strong>
+      <p>No network requests. No analytics. No live credential validation. No source retention.</p>
+    </aside>
+  </section>
+
+  <section class="scanner-workspace shell">
+    <SecretScanner />
+  </section>
+
+  <section class="how-it-works shell" aria-labelledby="how-heading">
+    <div class="section-head">
+      <div><p class="eyebrow">How to use the result</p><h2 id="how-heading">Detection is the start of the decision.</h2></div>
+    </div>
+    <div class="steps">
+      <article><span>01</span><h3>Confirm the context</h3><p>Check the source, variable name, environment clues, and redacted neighboring lines.</p></article>
+      <article><span>02</span><h3>Rotate before investigating</h3><p>If the value may be real, revoke or rotate it first. Do not paste it into another validation service.</p></article>
+      <article><span>03</span><h3>Fix the storage path</h3><p>Move the replacement to protected secret storage and remove the exposed value from history.</p></article>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .scanner-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(17rem, 0.65fr); align-items: end; gap: clamp(2rem, 8vw, 7rem); padding-block: clamp(4rem, 8vw, 7rem) 3rem; }
+  .scanner-hero .page-title { max-width: 16ch; }
+  .scanner-proof { padding: 1rem; border: 1px solid var(--line-strong); background: var(--surface); box-shadow: var(--shadow); }
+  .scanner-proof span { color: var(--signal-dark); font: 750 0.6rem var(--mono); letter-spacing: 0.08em; }
+  .scanner-proof strong { display: block; margin-top: 0.6rem; font-size: 1.1rem; }
+  .scanner-proof p { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
+  .scanner-workspace { padding-bottom: clamp(4rem, 8vw, 7rem); }
+  .how-it-works { padding-block: clamp(3.5rem, 7vw, 6rem); border-top: 1px solid var(--line); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+  .steps article { min-height: 13rem; padding: 1rem; border: 1px solid var(--line); background: var(--surface); }
+  .steps span { color: var(--signal-dark); font: 800 0.65rem var(--mono); }
+  .steps h3 { margin: 2rem 0 0.6rem; font-size: 1.15rem; letter-spacing: -0.025em; }
+  .steps p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
+  @media (max-width: 800px) { .scanner-hero { grid-template-columns: 1fr; } .scanner-proof { max-width: 30rem; } }
+  @media (max-width: 650px) { .steps { grid-template-columns: 1fr; } .steps article { min-height: auto; } }
+</style>

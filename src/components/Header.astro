@@ -2,6 +2,7 @@
 const path = Astro.url.pathname;
 const links = [
   { href: '/advisories/', label: 'Advisories' },
+  { href: '/scanner/', label: 'Secret Scanner' },
   { href: '/posts/', label: 'Posts' },
   { href: '/memes/', label: 'Memes' },
   { href: '/about/', label: 'About' },
@@ -20,7 +21,7 @@ const links = [
       </button>
       <div class="nav-links" id="nav-links">
         {links.map((link) => (
-          <a class:list={{ primary: link.href === '/advisories/' }} href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
+          <a href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
             {link.label}
           </a>
         ))}
@@ -86,6 +87,7 @@ const links = [
 
   .nav-links a {
     padding: 0.45rem 0.7rem;
+    border: 1px solid transparent;
     border-radius: 0;
     color: var(--muted);
     font-size: 0.78rem;
@@ -93,11 +95,11 @@ const links = [
     text-decoration: none;
   }
 
-  .nav-links a:hover,
-  .nav-links a[aria-current='page'] { background: var(--surface); color: var(--ink); }
+  .nav-links a:hover { background: var(--surface); color: var(--ink); }
 
-  .nav-links a.primary {
+  .nav-links a[aria-current='page'] {
     border: 1px solid color-mix(in srgb, var(--signal) 42%, var(--line));
+    background: var(--surface);
     color: var(--signal-dark);
   }
 

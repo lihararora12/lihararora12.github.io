@@ -3,10 +3,14 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22.6"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "npm run verify:scanner && astro check && astro build",
+    "verify:scanner": "node --experimental-strip-types scripts/verify-scanner.ts",
     "preview": "astro preview",
     "astro": "astro"
   },

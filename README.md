@@ -2,7 +2,7 @@
 
 An independent static publication about vulnerability management, AI agents, remediation systems, security advisories, and the absurdity encountered along the way.
 
-The site is built with [Astro](https://astro.build/) and deployed to GitHub Pages. It has no server, database, analytics, or runtime content dependency.
+The site is built with [Astro](https://astro.build/) and deployed to GitHub Pages. It has no server, database, analytics, or runtime content dependency. The `/scanner/` tool runs entirely inside the visitor's browser.
 
 ## Local development
 
@@ -17,6 +17,14 @@ Open the local URL printed by Astro. To run type checks and generate the product
 npm run build
 npm run preview
 ```
+
+The production build first verifies the secret-scanner catalog, exercises representative patterns from every detector category, and scans public source files for credential-like values.
+
+## Secret scanner
+
+The scanner contains 112 detectors covering common cloud, developer-tool, communication, AI, payment, database, monitoring, identity, storage, and certificate formats. It adds local context such as source location, likely environment, exposure type, risk reasons, and remediation guidance.
+
+It never validates credentials against provider APIs. Source text remains in browser memory, and exported reports contain masked values with redacted context.
 
 ## Publishing content
 

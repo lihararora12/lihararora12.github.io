@@ -2,17 +2,19 @@
 title: "Metabase says its critical zero-day was actively exploited"
 summary: "An unauthenticated SQL-injection path can lead to Metabase administrator access, exposed database credentials, and data theft."
 advisoryDate: 2026-08-06
-identifier: "GHSA-vwf4-m7j8-wcjf"
+updatedAt: 2026-08-11
+identifier: "CVE-2026-72898"
 vendor: "Metabase"
 product: "Metabase"
 priority: "act-now"
 status: "Active exploitation"
-kev: false
-cwes: []
+dueDate: 2026-08-14
+kev: true
+cwes: ["CWE-89"]
 technologies: ["Analytics", "Data platforms"]
 weaknesses: ["SQL injection"]
 impacts: ["Admin takeover", "Credential exposure", "Data exposure"]
-evidence: ["Vendor-confirmed exploitation"]
+evidence: ["Vendor-confirmed exploitation", "CISA KEV"]
 actions: ["Patch", "Investigate", "Rotate credentials"]
 eli5: "Imagine a dashboard with a forgotten side door. A stranger can slide database instructions through that door, promote themselves to building manager, then open the cupboards where connected database keys are stored."
 flow:
@@ -29,12 +31,18 @@ sourceLinks:
     url: "https://www.metabase.com/blog/security-update"
   - label: "GitHub security advisory — GHSA-vwf4-m7j8-wcjf"
     url: "https://github.com/metabase/metabase/security/advisories/GHSA-vwf4-m7j8-wcjf"
+  - label: "NVD — CVE-2026-72898"
+    url: "https://nvd.nist.gov/vuln/detail/CVE-2026-72898"
+  - label: "CISA KEV — CVE-2026-72898"
+    url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-72898"
 draft: false
 ---
 
 ## What happened
 
-Metabase says its Cloud service was attacked through a previously unknown vulnerability affecting versions 1.58 and above. Metabase blocked the abused endpoint, identified the flaw, and patched its Cloud customers. The corresponding GitHub advisory rates the issue critical with a CVSS 3.1 score of 10.0 and confirms active exploitation. No CVE had been assigned when this summary was written; the public identifier is GHSA-vwf4-m7j8-wcjf.
+Metabase says its Cloud service was attacked through a previously unknown vulnerability affecting versions 1.58 and above. Metabase blocked the abused endpoint, identified the flaw, and patched its Cloud customers. The corresponding GitHub advisory rates the issue critical with a CVSS 3.1 score of 10.0 and confirms active exploitation. The issue is now tracked as CVE-2026-72898 as well as GHSA-vwf4-m7j8-wcjf.
+
+CISA added CVE-2026-72898 to the Known Exploited Vulnerabilities catalog on August 11, 2026, with an August 14 required-action date for covered agencies.
 
 Self-hosted installations are not patched automatically. An unauthenticated attacker can inject SQL into the Metabase application database, gain instance administrator access, change configuration, steal stored credentials for connected databases, query accessible data, and export it.
 

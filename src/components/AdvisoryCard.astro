@@ -16,7 +16,7 @@ const date = entry.data.advisoryDateLabel ?? entry.data.advisoryDate.toLocaleDat
 });
 ---
 
-<a class="advisory-card" href={advisoryUrl(entry)}>
+<a class:list={['advisory-card', `prio-${entry.data.priority}`]} href={advisoryUrl(entry)}>
   <div class="card-meta">
     <span>{entry.data.identifier}</span>
     <span>Advisory {date}</span>

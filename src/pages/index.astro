@@ -4,12 +4,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import AdvisoryCard from '../components/AdvisoryCard.astro';
 import SecretScanner from '../components/SecretScanner.astro';
-import { isPublished, newestPostsFirst, newestAdvisoriesFirst } from '../lib/content';
+import { isPublished, newestPostsFirst, newestAdvisoriesFirst, advisoryUrl } from '../lib/content';
 import { DETECTORS } from '../lib/secret-scanner/detectors';
 
 const posts = (await getCollection('posts')).filter(isPublished).sort(newestPostsFirst);
 const advisories = (await getCollection('advisories')).filter(isPublished).sort(newestAdvisoriesFirst);
 const detectorCount = DETECTORS.length;
+const priorityLabels = { 'act-now': 'Act now', high: 'High priority', watch: 'Watch' };
 
 // Patch forecast: weather-style read on the last 14 days of advisories.
 const now = new Date();
@@ -41,68 +42,57 @@ const maxBar = Math.max(1, ...weekBars.map((b) => b.count));
 const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 const tickerItems = advisories.slice(0, 10);
-const blips = [
-  { top: '22%', left: '64%', delay: '0s' },
-  { top: '58%', left: '30%', delay: '0.9s' },
-  { top: '70%', left: '68%', delay: '1.7s' },
-  { top: '38%', left: '44%', delay: '2.4s' },
-];
+const fanCards = advisories.slice(0, 3);
+const fanRotations = ['-9deg', '5deg', '-3deg'];
 ---
 
 <BaseLayout>
   <!-- ================= HERO ================= -->
   <section class="hero">
-    <img class="hero-nebula" src="/images/nebula-hero.webp" alt="" aria-hidden="true" fetchpriority="high" />
-    <canvas class="hero-stars" id="starfield" aria-hidden="true"></canvas>
-    <div class="hero-veil" aria-hidden="true"></div>
-
     <div class="section-shell hero-inner">
       <div class="hero-copy">
-        <p class="kicker"><span class="live-dot"></span>:MISSION CONTROL</p>
-        <h1 class="display">Security is all about <span class="grad-text">context.</span></h1>
+        <p class="kicker"><span class="live-dot"></span>Issue no. 42 · The security zine</p>
+        <h1 class="display">Security is all about <span class="hl">context.</span></h1>
         <p class="lede">
           Practical security thinking for systems that increasingly write, deploy, and operate themselves. Fewer buzzwords. Better evidence. Occasional memes.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="/advisories/">Check advisories</a>
+          <a class="btn" href="/advisories/">Check advisories</a>
           <a class="btn btn-ghost" href="#scanner-deck">Run the scanner ↓</a>
         </div>
-        <div class="hero-telemetry mono" aria-label="Site telemetry">
-          <span><strong>{advisories.length}</strong> advisories tracked</span>
-          <span><strong>{detectorCount}</strong> detectors online</span>
-          <span class="ok">STATUS: CONTEXT REQUIRED</span>
+        <div class="hero-telemetry" aria-label="Site telemetry">
+          <span class="sticker"><strong>{advisories.length}</strong>&nbsp;advisories tracked</span>
+          <span class="sticker teal"><strong>{detectorCount}</strong>&nbsp;detectors online</span>
+          <span class="sticker tomato">Status: context required</span>
         </div>
       </div>
 
-      <div class="hero-visual" aria-hidden="true" id="hero-visual">
-        <div class="orbit-ring r1" style="animation-duration: 26s;"><span class="sat"></span></div>
-        <div class="orbit-ring r2" style="animation-duration: 40s; animation-direction: reverse;"><span class="sat"></span></div>
-        <div class="orbit-ring r3" style="animation-duration: 60s;"><span class="sat"></span></div>
-        <div class="planet"></div>
-        <div class="planet-ring"></div>
-        <div class="hero-tag tag-float-1 mono">CVE-2026-93605 · vm2</div>
-        <div class="hero-tag tag-float-2 mono">KEV // CONFIRMED</div>
+      <div class="hero-visual" id="hero-visual" aria-hidden="true">
+        <div class="fan">
+          {fanCards.map((a, i) => (
+            <a class="fan-card" style={`--r: ${fanRotations[i]}`} href={advisoryUrl(a)} tabindex="-1">
+              <span class="fan-id">{a.data.identifier}</span>
+              <strong>{a.data.vendor} {a.data.product}</strong>
+              <span class:list={['priority', a.data.priority]}>{priorityLabels[a.data.priority]}</span>
+            </a>
+          ))}
+        </div>
+        <div class="starburst hero-seal"><span>Fresh<br />CVEs<br />daily</span></div>
+        <span class="sticker paper hero-sticker s1">No tracking</span>
+        <span class="sticker hero-sticker s2">100% independent</span>
       </div>
     </div>
-
-    <div class="hero-scroll mono" aria-hidden="true">SCROLL ↓</div>
   </section>
 
   <!-- ================= TICKER ================= -->
-  <div class="ticker-band" aria-label="Latest advisories ticker">
+  <div class="ticker-tape" aria-label="Latest advisories ticker">
     <div class="marquee">
       <div class="marquee-track">
         {tickerItems.map((a) => (
-          <span class="ticker-item mono">
-            <i class:list={['ticker-dot', a.data.priority]}></i>
-            <strong>{a.data.identifier}</strong> {a.data.vendor} {a.data.product}
-          </span>
+          <span class="ticker-item"><span class="tick-star">★</span><code>{a.data.identifier}</code> {a.data.vendor} {a.data.product}</span>
         ))}
         {tickerItems.map((a) => (
-          <span class="ticker-item mono" aria-hidden="true">
-            <i class:list={['ticker-dot', a.data.priority]}></i>
-            <strong>{a.data.identifier}</strong> {a.data.vendor} {a.data.product}
-          </span>
+          <span class="ticker-item" aria-hidden="true"><span class="tick-star">★</span><code>{a.data.identifier}</code> {a.data.vendor} {a.data.product}</span>
         ))}
       </div>
     </div>
@@ -111,50 +101,47 @@ const blips = [
   <!-- ================= STATS ================= -->
   <section class="section-block stats-band" aria-label="Site statistics">
     <div class="section-shell stats-grid">
-      <div class="stat reveal"><span class="stat-num" data-count={advisories.length}>0</span><span class="stat-label mono">advisories tracked</span></div>
-      <div class="stat reveal"><span class="stat-num" data-count={posts.length}>0</span><span class="stat-label mono">field notes published</span></div>
-      <div class="stat reveal"><span class="stat-num" data-count={detectorCount}>0</span><span class="stat-label mono">secret detectors</span></div>
-      <div class="stat reveal"><span class="stat-num" data-count="39">0</span><span class="stat-label mono">memes deployed</span></div>
+      <div class="stat-card reveal"><span class="stat-num display" data-count={advisories.length}>0</span><span class="stat-label">advisories tracked</span></div>
+      <div class="stat-card reveal"><span class="stat-num display" data-count={posts.length}>0</span><span class="stat-label">field notes published</span></div>
+      <div class="stat-card reveal"><span class="stat-num display" data-count={detectorCount}>0</span><span class="stat-label">secret detectors</span></div>
+      <div class="stat-card reveal"><span class="stat-num display" data-count="39">0</span><span class="stat-label">memes deployed</span></div>
     </div>
   </section>
 
   <!-- ================= FORECAST ================= -->
-  <section class="section-block" aria-labelledby="forecast-heading">
+  <section class="section-block forecast-band" aria-labelledby="forecast-heading">
     <div class="section-shell forecast-grid">
-      <div class="forecast-readout reveal">
-        <p class="kicker">:PATCH FORECAST // {forecastDate}</p>
-        <p class="forecast-condition display" data-condition={condition.toLowerCase()} id="forecast-heading">{condition}</p>
+      <div class="reveal">
+        <p class="kicker alt">Patch forecast · {forecastDate}</p>
         <p class="forecast-copy">{conditionCopy}</p>
-        <div class="forecast-meta mono">
-          <span><strong>{recentAdvisories.length}</strong> advisories / 14d</span>
-          <span><strong>{kevCount}</strong> known-exploited</span>
-          <span><strong>{actNowCount}</strong> act-now</span>
+        <div class="forecast-meta">
+          <span class="sticker paper"><strong>{recentAdvisories.length}</strong>&nbsp;advisories / 14d</span>
+          <span class="sticker tomato"><strong>{kevCount}</strong>&nbsp;known-exploited</span>
+          <span class="sticker"><strong>{actNowCount}</strong>&nbsp;act-now</span>
         </div>
         <div class="forecast-week" role="img" aria-label={`Advisories published per day over the last 7 days, ending ${forecastDate}`}>
           {weekBars.map((b) => (
             <div class="forecast-day">
-              <span class="forecast-count mono">{b.count > 0 ? b.count : ''}</span>
+              <span class="forecast-count">{b.count > 0 ? b.count : ''}</span>
               <div class="forecast-bar" style={`--h: ${(b.count / maxBar * 100).toFixed(0)}%`} title={`${b.full}: ${b.count} advisories`}></div>
-              <span class="forecast-label mono">{b.label}</span>
+              <span class="forecast-label">{b.label}</span>
             </div>
           ))}
         </div>
       </div>
-      <div class="radar-wrap reveal">
-        <div class="radar radar-lg" role="img" aria-label="Threat radar sweep">
-          {blips.map((b) => <span class="blip" style={`top:${b.top};left:${b.left};animation-delay:${b.delay};`}></span>)}
-        </div>
-        <p class="radar-caption mono">DEEP-FIELD SCAN · SWEEP 03 · {kevCount + actNowCount} CONTACTS</p>
+      <div class="stamp-wrap reveal">
+        <div class="rubber-stamp" data-condition={condition.toLowerCase()} id="forecast-heading">{condition}</div>
+        <p class="stamp-caption">Field report · sweep 03 · {kevCount + actNowCount} contacts on the board</p>
       </div>
     </div>
   </section>
 
   <!-- ================= ADVISORIES ================= -->
-  <section class="section-block advisory-band" aria-labelledby="advisory-heading">
+  <section class="section-block" aria-labelledby="advisory-heading">
     <div class="section-shell">
       <div class="section-head reveal">
         <div>
-          <p class="kicker">:ADVISORY DESK</p>
+          <p class="kicker">Advisory desk</p>
           <h2 id="advisory-heading">Known exploitation already skipped the prioritization meeting.</h2>
         </div>
         <a class="text-link" href="/advisories/">All advisories →</a>
@@ -166,11 +153,11 @@ const blips = [
   </section>
 
   <!-- ================= SCANNER DECK ================= -->
-  <section class="section-block" id="scanner-deck" aria-labelledby="scanner-heading">
+  <section class="section-block scanner-band" id="scanner-deck" aria-labelledby="scanner-heading">
     <div class="section-shell">
       <div class="section-head reveal">
         <div>
-          <p class="kicker"><span class="live-dot"></span>:FLIGHT DECK // LIVE DEMO</p>
+          <p class="kicker alt"><span class="live-dot"></span>Live demo · try it right here</p>
           <h2 id="scanner-heading">Find leaked secrets without leaking them.</h2>
         </div>
       </div>
@@ -186,7 +173,7 @@ const blips = [
     <div class="section-shell">
       <div class="section-head reveal">
         <div>
-          <p class="kicker">:LATEST TRANSMISSIONS</p>
+          <p class="kicker">Latest transmissions</p>
           <h2 id="latest-posts">For the work after the scanner finishes yelling.</h2>
         </div>
         <a class="text-link" href="/posts/">All posts →</a>
@@ -200,15 +187,17 @@ const blips = [
   <!-- ================= MEMES ================= -->
   <section class="section-block">
     <div class="section-shell">
-      <div class="meme-deck glass reveal" data-tilt>
-        <div class="card-glow"></div>
-        <div class="meme-frame">
+      <div class="meme-deck reveal" data-tilt>
+        <div class="polaroid">
+          <span class="tape t1" aria-hidden="true"></span>
+          <span class="tape t2" aria-hidden="true"></span>
           <img src="/images/photos/memes-24.jpg" alt="Security meme from the archive" loading="lazy" />
+          <span class="polaroid-caption">exhibit A: the backlog</span>
         </div>
         <div class="meme-copy">
-          <p class="kicker">:COMPENSATING CONTROL</p>
-          <h2 class="display">When remediation is blocked, deploy humor.</h2>
-          <a class="btn btn-primary" href="/memes/">Open the meme archive</a>
+          <p class="kicker">Compensating control</p>
+          <h2 class="display">When remediation is blocked, <span class="hl-tomato">deploy humor.</span></h2>
+          <a class="btn" href="/memes/">Open the meme archive</a>
         </div>
       </div>
     </div>
@@ -216,76 +205,6 @@ const blips = [
 </BaseLayout>
 
 <script>
-  // ---------- starfield ----------
-  (() => {
-    const canvas = document.getElementById('starfield');
-    if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    let w = 0, h = 0, mx = 0, my = 0;
-    const stars: Array<{ x: number; y: number; r: number; tw: number; ts: number; depth: number }> = [];
-    const N = 170;
-    const resize = () => {
-      const r = canvas.getBoundingClientRect();
-      w = canvas.width = r.width;
-      h = canvas.height = r.height;
-    };
-    const seed = () => {
-      stars.length = 0;
-      for (let i = 0; i < N; i++) {
-        stars.push({
-          x: Math.random(), y: Math.random(),
-          r: Math.random() * 1.4 + 0.3,
-          tw: Math.random() * Math.PI * 2,
-          ts: 0.008 + Math.random() * 0.03,
-          depth: 0.25 + Math.random() * 0.75,
-        });
-      }
-    };
-    let meteor: { x: number; y: number; vx: number; vy: number; life: number } | null = null;
-    const throwMeteor = () => {
-      meteor = { x: Math.random() * 0.7 + 0.15, y: -0.05, vx: -(0.004 + Math.random() * 0.004), vy: 0.006 + Math.random() * 0.004, life: 1 };
-      window.setTimeout(throwMeteor, 5000 + Math.random() * 9000);
-    };
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, w, h);
-      const ox = mx * 18, oy = my * 12;
-      for (const s of stars) {
-        const a = 0.35 + 0.65 * Math.abs(Math.sin(t * s.ts + s.tw));
-        ctx.globalAlpha = a * s.depth;
-        ctx.fillStyle = '#dfe6ff';
-        ctx.beginPath();
-        ctx.arc(s.x * w + ox * s.depth, s.y * h + oy * s.depth, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      if (meteor) {
-        meteor.x += meteor.vx; meteor.y += meteor.vy; meteor.life -= 0.012;
-        if (meteor.life <= 0 || meteor.y > 1.1) meteor = null;
-        else {
-          const x = meteor.x * w, y = meteor.y * h;
-          const grad = ctx.createLinearGradient(x, y, x - meteor.vx * w * 14, y - meteor.vy * h * 14);
-          grad.addColorStop(0, `rgba(255,170,110,${0.9 * meteor.life})`);
-          grad.addColorStop(1, 'rgba(255,170,110,0)');
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 1.6;
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x - meteor.vx * w * 14, y - meteor.vy * h * 14);
-          ctx.stroke();
-        }
-      }
-      requestAnimationFrame(draw);
-    };
-    window.addEventListener('resize', resize);
-    window.addEventListener('pointermove', (e) => {
-      mx = e.clientX / window.innerWidth - 0.5;
-      my = e.clientY / window.innerHeight - 0.5;
-    }, { passive: true });
-    resize(); seed(); throwMeteor();
-    requestAnimationFrame(draw);
-  })();
-
   // ---------- reveal on scroll ----------
   (() => {
     const io = new IntersectionObserver((entries) => {
@@ -302,7 +221,7 @@ const blips = [
         const el = e.target;
         io.unobserve(el);
         const target = parseInt(el.getAttribute('data-count') || '0', 10);
-        const dur = 1300, t0 = performance.now();
+        const dur = 1100, t0 = performance.now();
         const tick = (t: number) => {
           const p = Math.min(1, (t - t0) / dur);
           const eased = 1 - Math.pow(1 - p, 3);
@@ -323,20 +242,20 @@ const blips = [
         const r = card.getBoundingClientRect();
         const px = (e.clientX - r.left) / r.width - 0.5;
         const py = (e.clientY - r.top) / r.height - 0.5;
-        card.style.transform = `perspective(900px) rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 7).toFixed(2)}deg) translateY(-4px)`;
+        card.style.transform = `perspective(900px) rotateX(${(-py * 4).toFixed(2)}deg) rotateY(${(px * 5).toFixed(2)}deg)`;
       });
       card.addEventListener('pointerleave', () => { card.style.transform = ''; });
     });
   })();
 
-  // ---------- hero visual parallax ----------
+  // ---------- hero fan parallax ----------
   (() => {
     const visual = document.getElementById('hero-visual');
     if (!visual || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     window.addEventListener('pointermove', (e) => {
       const x = e.clientX / window.innerWidth - 0.5;
       const y = e.clientY / window.innerHeight - 0.5;
-      visual.style.transform = `translate(${x * 22}px, ${y * 16}px)`;
+      visual.style.transform = `translate(${x * 18}px, ${y * 12}px)`;
     }, { passive: true });
   })();
 </script>
@@ -345,216 +264,173 @@ const blips = [
   /* ---------- hero ---------- */
   .hero {
     position: relative;
-    min-height: max(92vh, 620px);
-    display: flex;
-    align-items: center;
     overflow: clip;
-    isolation: isolate;
-  }
-  .hero-nebula {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    opacity: 0.5;
-    z-index: -3;
-  }
-  .hero-stars {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    z-index: -2;
-  }
-  .hero-veil {
-    position: absolute; inset: 0;
+    padding: clamp(3.5rem, 7vw, 6rem) 0 clamp(3rem, 6vw, 5rem);
+    border-bottom: var(--bd);
     background:
-      linear-gradient(180deg, rgba(4,6,12,0.55) 0%, transparent 30%, transparent 62%, var(--void) 100%),
-      radial-gradient(900px 480px at 30% 45%, transparent 40%, rgba(4,6,12,0.5) 100%);
-    z-index: -1;
+      radial-gradient(700px 380px at 88% 8%, rgba(226, 72, 43, 0.14), transparent 65%),
+      radial-gradient(600px 420px at 4% 90%, rgba(242, 176, 30, 0.16), transparent 65%);
   }
   .hero-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     gap: clamp(2rem, 5vw, 4rem);
     align-items: center;
-    width: 100%;
-    padding-block: 7rem 4rem;
   }
   .hero-copy .display {
-    font-size: clamp(3.2rem, 7.2vw, 6.4rem);
-    margin: 1.1rem 0 0;
-    max-width: 12ch;
+    font-size: clamp(3rem, 7vw, 6rem);
+    margin: 1.2rem 0 0;
+    max-width: 11ch;
     text-wrap: balance;
-    text-shadow: 0 4px 40px rgba(0,0,0,0.6);
+    transform: rotate(-0.8deg);
   }
-  .lede {
-    margin: 1.5rem 0 0;
-    max-width: 44ch;
-    color: #c3c9e4;
-    font-size: 1.08rem;
-    line-height: 1.65;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.7);
-  }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+  .lede { margin: 1.6rem 0 0; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.1rem; }
   .hero-telemetry {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem 1.6rem;
-    margin-top: 2.4rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    color: var(--muted);
+    gap: 0.7rem;
+    margin-top: 2.2rem;
   }
-  .hero-telemetry strong { color: var(--ink); font-size: 0.85rem; margin-right: 0.3em; }
-  .hero-telemetry .ok { color: var(--lime); }
+  .hero-telemetry .sticker strong { font-family: var(--font-display); font-weight: 400; }
 
-  .hero-visual {
-    position: relative;
-    height: clamp(320px, 34vw, 480px);
-    transition: transform 0.25s ease-out;
-  }
-  .hero-visual .orbit-ring { inset: 0; margin: auto; }
-  .orbit-ring.r1 { width: 62%; aspect-ratio: 1; }
-  .orbit-ring.r2 { width: 84%; aspect-ratio: 1; border-style: dashed; }
-  .orbit-ring.r3 { width: 106%; aspect-ratio: 1; opacity: 0.6; }
-  .planet {
+  .hero-visual { position: relative; height: clamp(340px, 36vw, 500px); transition: transform 0.25s ease-out; }
+  .fan { position: absolute; inset: 0; }
+  .fan-card {
     position: absolute;
-    inset: 0; margin: auto;
-    width: 34%; aspect-ratio: 1;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 32% 28%, #ffb37e 0%, var(--orange) 34%, #7a2c08 72%, #1c0d04 100%);
-    box-shadow:
-      0 0 60px rgba(255,106,26,0.55),
-      0 0 160px rgba(255,106,26,0.25),
-      inset -18px -22px 50px rgba(0,0,0,0.55);
-    animation: planet-float 7s ease-in-out infinite;
+    width: min(72%, 300px);
+    padding: 1.1rem 1.1rem 1rem;
+    background: var(--card);
+    border: var(--bd);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard-sm);
+    color: var(--ink);
+    text-decoration: none;
+    transform: rotate(var(--r));
+    transition: transform 0.2s;
+    pointer-events: none;
   }
-  @keyframes planet-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
-  .planet-ring {
-    position: absolute;
-    inset: 0; margin: auto;
-    width: 58%; aspect-ratio: 2.6;
-    border: 2px solid rgba(255,138,61,0.5);
-    border-radius: 50%;
-    transform: rotate(-18deg);
-    box-shadow: 0 0 24px rgba(255,106,26,0.25);
-    animation: planet-float 7s ease-in-out infinite reverse;
+  .fan-card:nth-child(1) { top: 4%; left: 2%; }
+  .fan-card:nth-child(2) { top: 30%; left: 22%; }
+  .fan-card:nth-child(3) { top: 58%; left: 6%; }
+  .fan-card:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
+  .fan-id {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: var(--ink);
+    color: var(--mustard);
+    padding: 0.25em 0.6em;
+    border-radius: 6px;
+    margin-bottom: 0.6rem;
   }
-  .hero-tag {
-    position: absolute;
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    color: var(--cyan);
-    border: 1px solid rgba(110,231,249,0.35);
-    background: rgba(6,10,20,0.7);
-    padding: 0.5em 0.9em;
-    border-radius: 8px;
-    backdrop-filter: blur(8px);
-    white-space: nowrap;
-  }
-  .tag-float-1 { top: 6%; right: 2%; animation: planet-float 6s ease-in-out infinite; }
-  .tag-float-2 { bottom: 10%; left: 0; color: #ff8ba0; border-color: rgba(255,61,94,0.4); animation: planet-float 8s ease-in-out infinite reverse; }
-  .hero-scroll {
-    position: absolute;
-    bottom: 1.4rem; left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.62rem;
-    letter-spacing: 0.3em;
-    color: var(--faint);
-    animation: planet-float 3s ease-in-out infinite;
-  }
-
-  /* ---------- ticker ---------- */
-  .ticker-band {
-    border-block: 1px solid var(--hairline);
-    background: rgba(8,11,22,0.6);
-    padding: 0.95rem 0;
-    backdrop-filter: blur(8px);
-  }
-  .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7em;
-    font-size: 0.74rem;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-  }
-  .ticker-item strong { color: var(--ink); }
-  .ticker-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
-  .ticker-dot.act-now { background: var(--ember); box-shadow: 0 0 10px var(--ember); }
-  .ticker-dot.high { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
-  .ticker-dot.watch { background: #34d399; box-shadow: 0 0 10px #34d399; }
+  .fan-card strong { display: block; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.15; margin-bottom: 0.7rem; }
+  .hero-seal { position: absolute; top: 0; right: 0; width: clamp(110px, 24%, 150px); }
+  .hero-sticker { position: absolute; }
+  .hero-sticker.s1 { bottom: 12%; right: 4%; transform: rotate(3deg); }
+  .hero-sticker.s2 { bottom: 2%; left: 30%; transform: rotate(-2deg); background: var(--sky); color: #f2f8ff; }
 
   /* ---------- stats ---------- */
-  .stats-band { border-bottom: 1px solid var(--hairline-soft); }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+  .stats-band { padding-block: clamp(2.5rem, 5vw, 4rem); }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+  .stat-card {
+    padding: 1.3rem 1.2rem 1.1rem;
+    background: var(--card);
+    border: var(--bd);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard-sm);
+    transform: rotate(-0.6deg);
+    transition: transform 0.18s, box-shadow 0.18s;
   }
-  .stat { display: flex; flex-direction: column; gap: 0.6rem; }
-  .stat-num { font-size: clamp(3rem, 5.5vw, 5rem); }
+  .stat-card:nth-child(2n) { transform: rotate(0.7deg); }
+  .stat-card:hover { transform: rotate(0deg) translate(-2px, -2px); box-shadow: var(--shadow-hard); }
+  .stat-num { display: block; font-size: clamp(2.6rem, 4.5vw, 4rem); }
   .stat-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.22em;
+    display: block;
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
   /* ---------- forecast ---------- */
+  .forecast-band { border-block: var(--bd); background: var(--paper-deep); }
   .forecast-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     gap: clamp(2.5rem, 6vw, 5rem);
     align-items: center;
   }
-  .forecast-condition {
-    margin: 1rem 0 0;
-    font-size: clamp(3.4rem, 7vw, 6rem);
-    letter-spacing: -0.04em;
+  .forecast-copy {
+    margin: 1.3rem 0 0;
+    max-width: 38ch;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.55;
   }
-  .forecast-condition[data-condition="stormy"] { color: var(--ember); text-shadow: 0 0 44px rgba(255,61,94,0.5); }
-  .forecast-condition[data-condition="elevated"] { color: var(--amber); text-shadow: 0 0 44px rgba(255,176,32,0.45); }
-  .forecast-condition[data-condition="calm"] { color: var(--lime); text-shadow: 0 0 44px rgba(215,247,91,0.35); }
-  .forecast-copy { margin: 1rem 0 0; max-width: 38ch; color: #c3c9e4; font-size: 1.05rem; line-height: 1.6; }
-  .forecast-meta {
-    display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem;
-    margin: 1.4rem 0 0;
-    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+  .forecast-meta { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
+  .forecast-meta .sticker strong { font-family: var(--font-display); font-weight: 400; }
+  .forecast-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.7rem; margin-top: 2rem; max-width: 30rem; }
+  .forecast-day { display: flex; min-height: 8.5rem; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0.4rem; }
+  .forecast-count { min-height: 1.1rem; font-family: var(--font-display); font-size: 0.85rem; color: var(--tomato-deep); }
+  .forecast-bar {
+    width: 100%; max-width: 2.6rem;
+    height: var(--h); min-height: 6px;
+    border: var(--bd-thin);
+    border-radius: 8px 8px 3px 3px;
+    background: repeating-linear-gradient(-45deg, var(--mustard), var(--mustard) 8px, #e09c12 8px, #e09c12 16px);
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: transform 0.15s;
+  }
+  .forecast-day:hover .forecast-bar { transform: scaleY(1.05) rotate(-1deg); }
+  .forecast-label { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+
+  .stamp-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; }
+  .rubber-stamp {
+    padding: 0.9rem 2.2rem;
+    border: 6px solid var(--tomato-deep);
+    border-radius: 12px;
+    color: var(--tomato-deep);
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    letter-spacing: 0.02em;
+    transform: rotate(-6deg);
+    text-transform: uppercase;
+    background: rgba(226, 72, 43, 0.06);
+    box-shadow: inset 0 0 0 3px rgba(226, 72, 43, 0.25);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    animation: stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+  .rubber-stamp[data-condition="elevated"] { border-color: #b57e0a; color: #b57e0a; background: rgba(242, 176, 30, 0.08); box-shadow: inset 0 0 0 3px rgba(242, 176, 30, 0.3); }
+  .rubber-stamp[data-condition="calm"] { border-color: var(--teal); color: var(--teal); background: rgba(23, 128, 107, 0.06); box-shadow: inset 0 0 0 3px rgba(23, 128, 107, 0.25); }
+  @keyframes stamp-in {
+    0% { opacity: 0; transform: rotate(-6deg) scale(2.2); }
+    60% { opacity: 1; transform: rotate(-6deg) scale(0.94); }
+    100% { opacity: 1; transform: rotate(-6deg) scale(1); }
+  }
+  .stamp-caption {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     color: var(--muted);
   }
-  .forecast-meta strong { color: var(--orange-hot); font-size: 0.95rem; margin-right: 0.3em; }
-  .forecast-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.7rem; margin-top: 2rem; max-width: 30rem; }
-  .forecast-day { display: flex; min-height: 8rem; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0.4rem; }
-  .forecast-count { min-height: 1rem; font-size: 0.68rem; font-weight: 700; color: var(--orange-hot); }
-  .forecast-bar {
-    width: 100%; max-width: 2.4rem;
-    height: var(--h); min-height: 4px;
-    border-radius: 6px 6px 2px 2px;
-    background: linear-gradient(180deg, var(--orange-hot), rgba(255,106,26,0.25));
-    box-shadow: 0 0 18px rgba(255,106,26,0.35);
-    transition: height 0.6s cubic-bezier(0.2, 0.7, 0.3, 1.2);
-  }
-  .forecast-day:hover .forecast-bar { background: linear-gradient(180deg, #ffd9b8, var(--orange)); }
-  .forecast-label { font-size: 0.62rem; text-transform: uppercase; color: var(--faint); }
 
-  .radar-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.1rem; }
-  .radar-lg { width: min(100%, 380px); aspect-ratio: 1; box-shadow: 0 0 80px rgba(255,106,26,0.18), inset 0 0 60px rgba(0,0,0,0.6); }
-  .radar-caption { font-size: 0.64rem; letter-spacing: 0.24em; color: var(--muted); margin: 0; }
-
-  /* ---------- advisory band ---------- */
-  .advisory-band {
-    background:
-      radial-gradient(900px 400px at 50% 0%, rgba(255,106,26,0.06), transparent 70%),
-      transparent;
-    border-block: 1px solid var(--hairline-soft);
-  }
-
-  /* ---------- scanner deck ---------- */
+  /* ---------- scanner band ---------- */
+  .scanner-band { background: var(--paper-deep); border-block: var(--bd); }
   .deck-lede {
     max-width: 62ch;
     margin: 0 0 2rem;
-    color: #c3c9e4;
-    font-size: 1rem;
+    color: var(--muted);
+    font-size: 1.02rem;
+    font-weight: 600;
     line-height: 1.65;
   }
 
@@ -564,41 +440,65 @@ const blips = [
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: clamp(2rem, 5vw, 4rem);
     align-items: center;
-    padding: clamp(1.5rem, 4vw, 3rem);
-    overflow: hidden;
-    transition: transform 0.2s ease-out;
+    padding: clamp(1.8rem, 4vw, 3rem);
+    background: var(--card);
+    border: var(--bd);
+    border-radius: 20px;
+    box-shadow: var(--shadow-hard-lg);
+    transform: rotate(-0.5deg);
   }
-  .meme-frame {
+  .polaroid {
+    position: relative;
+    padding: 0.9rem 0.9rem 3.2rem;
+    background: #fff;
+    border: var(--bd-thin);
+    box-shadow: var(--shadow-hard-sm);
     transform: rotate(-2.5deg);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--hairline);
-    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.7), 0 0 50px rgba(255,106,26,0.12);
-    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1.3);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1.3);
   }
-  .meme-deck:hover .meme-frame { transform: rotate(0deg) scale(1.02); }
-  .meme-frame img { display: block; width: 100%; height: auto; }
+  .meme-deck:hover .polaroid { transform: rotate(0.5deg) scale(1.02); }
+  .polaroid img { display: block; width: 100%; height: auto; border: 2px solid var(--ink); }
+  .polaroid-caption {
+    position: absolute;
+    bottom: 0.8rem; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tape {
+    position: absolute;
+    top: -14px;
+    width: 96px; height: 28px;
+    background: rgba(242, 176, 30, 0.75);
+    border-left: 2px dashed rgba(30, 24, 17, 0.4);
+    border-right: 2px dashed rgba(30, 24, 17, 0.4);
+    z-index: 2;
+  }
+  .tape.t1 { left: 8%; transform: rotate(-8deg); }
+  .tape.t2 { right: 8%; transform: rotate(7deg); background: rgba(224, 101, 154, 0.65); }
   .meme-copy h2 {
-    margin: 1rem 0 1.8rem;
+    margin: 1.1rem 0 1.8rem;
     font-size: clamp(2rem, 4vw, 3.4rem);
     max-width: 16ch;
   }
 
   @media (max-width: 960px) {
-    .hero-inner { grid-template-columns: 1fr; padding-block: 6rem 3rem; }
-    .hero-visual { height: 300px; order: -1; }
-    .orbit-ring.r3 { width: 96%; }
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-visual { height: 380px; }
     .forecast-grid { grid-template-columns: 1fr; }
-    .radar-wrap { order: -1; }
-    .radar-lg { width: min(100%, 300px); }
+    .stamp-wrap { order: -1; }
     .stats-grid { grid-template-columns: 1fr 1fr; }
     .meme-deck { grid-template-columns: 1fr; }
   }
   @media (max-width: 600px) {
-    .hero { min-height: auto; }
-    .hero-copy .display { font-size: clamp(2.6rem, 13vw, 3.6rem); }
-    .hero-visual { display: none; }
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .section-head { flex-direction: column; align-items: flex-start; }
+    .hero-copy .display { font-size: clamp(2.5rem, 13vw, 3.4rem); }
+    .hero-visual { height: 340px; }
+    .fan-card { width: 78%; }
+    .hero-seal { width: 96px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
   }
 </style>

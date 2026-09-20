@@ -61,20 +61,21 @@ const date = entry.data.publishedAt.toLocaleDateString('en-US', {
     display: flex;
     width: min(calc(100% - 2rem), 70rem);
     margin: 0 auto 6rem;
-    padding: 1.5rem;
-    border: 1px solid var(--line-strong);
-    border-radius: 2px;
+    padding: 1.6rem;
+    border: var(--bd);
+    border-radius: 16px;
     background: var(--ink);
     color: var(--paper);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-hard);
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
+    transform: rotate(-0.5deg);
   }
 
-  .article-cta h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; }
-  .article-cta .eyebrow { color: #f0b27a; }
-  .article-cta .eyebrow::before { background: #f0b27a; }
+  .article-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.05; }
+  .article-cta .eyebrow { color: var(--mustard); }
+  .article-cta .eyebrow::before { background: var(--tomato); border-color: var(--paper); }
 
   @media (max-width: 600px) {
     .article-cta { align-items: flex-start; flex-direction: column; }

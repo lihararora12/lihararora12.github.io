@@ -41,102 +41,82 @@ const { eli5, flow } = Astro.props;
 <style>
   .advisory-explainer {
     display: grid;
-    gap: 1rem;
-    padding-block: 2rem;
-    border-bottom: 1px solid var(--line);
+    gap: 1.1rem;
+    padding-block: 2.2rem;
   }
 
   .eli5 {
     display: grid;
     grid-template-columns: 4.5rem 1fr;
     gap: 1.2rem;
-    padding: 1.15rem;
-    border: 1px solid color-mix(in srgb, var(--acid) 44%, var(--line));
-    background: color-mix(in srgb, var(--acid) 7%, var(--surface));
+    padding: 1.2rem;
+    border: var(--bd);
+    border-radius: var(--radius);
+    background: var(--mustard-soft);
+    box-shadow: var(--shadow-hard-sm);
+    transform: rotate(-0.4deg);
   }
-
   .eli5 > span {
     display: grid;
     width: 4rem;
     height: 4rem;
     place-content: center;
-    border: 1px solid var(--acid);
-    color: var(--acid);
-    font: 800 0.78rem var(--mono);
-    letter-spacing: 0.08em;
+    border: var(--bd-thin);
+    border-radius: 12px;
+    background: var(--mustard);
+    color: var(--ink);
+    font: 400 0.72rem var(--font-display);
+    letter-spacing: 0.04em;
+    transform: rotate(-4deg);
+    box-shadow: 2px 2px 0 var(--ink);
   }
+  .eli5 h2 { margin: 0 0 0.35rem; font-family: var(--font-display); font-size: 1.2rem; }
+  .eli5 p { max-width: 50rem; margin: 0; color: var(--muted); font-weight: 600; line-height: 1.6; }
 
-  .eli5 h2 {
-    margin: 0 0 0.35rem;
-    font-size: 1.15rem;
-    letter-spacing: -0.025em;
+  .flow-panel {
+    overflow: hidden;
+    border: var(--bd);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow-hard-sm);
   }
-
-  .eli5 p { max-width: 50rem; margin: 0; color: var(--muted); line-height: 1.55; }
-
-  .flow-panel { overflow: hidden; border: 1px solid var(--line-strong); background: var(--surface); }
-
   .flow-header {
     display: flex;
     justify-content: space-between;
-    padding: 0.55rem 0.75rem;
-    border-bottom: 1px solid var(--line);
-    color: var(--signal-dark);
-    font: 700 0.61rem var(--mono);
-    letter-spacing: 0.08em;
+    gap: 1rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--ink);
+    color: var(--paper);
+    font: 700 0.64rem var(--font-mono);
+    letter-spacing: 0.12em;
   }
-
-  .flow {
-    display: grid;
-    grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr));
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .flow-panel:has(.flow li:nth-child(3):last-child) .flow { --steps: 3; }
-  .flow-panel:has(.flow li:nth-child(4):last-child) .flow { --steps: 4; }
-  .flow-panel:has(.flow li:nth-child(5):last-child) .flow { --steps: 5; }
-
+  .flow-header span:last-child { color: var(--mustard); }
+  .flow { list-style: none; margin: 0; padding: 1.1rem; display: grid; gap: 0.8rem; }
   .flow li {
     position: relative;
-    min-height: 10rem;
-    padding: 1rem 1.3rem 1rem 1rem;
-    border-right: 1px solid var(--line);
-  }
-
-  .flow li:last-child { border-right: 0; }
-
-  .flow li:not(:last-child)::after {
-    position: absolute;
-    top: 50%;
-    right: -0.55rem;
-    z-index: 2;
     display: grid;
-    width: 1.1rem;
-    height: 1.1rem;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 1rem;
+    padding: 1rem 1.1rem;
+    border: var(--bd-thin);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  .flow li:nth-child(odd) { transform: rotate(0.3deg); }
+  .flow li:nth-child(even) { transform: rotate(-0.3deg); }
+  .step-number {
+    grid-row: span 2;
+    display: grid;
     place-content: center;
-    border: 1px solid var(--signal);
-    background: var(--paper-deep);
-    color: var(--signal);
-    content: "→";
-    font: 700 0.7rem var(--mono);
-    transform: translateY(-50%);
+    width: 2.6rem; height: 2.6rem;
+    background: var(--tomato);
+    color: #fff8ee;
+    border: var(--bd-thin);
+    border-radius: 50%;
+    font: 400 0.9rem var(--font-display);
+    box-shadow: 2px 2px 0 var(--ink);
+    transform: rotate(-5deg);
   }
-
-  .step-number { display: block; margin-bottom: 1.4rem; color: var(--signal-dark); font: 700 0.62rem var(--mono); }
-  .flow strong { display: block; font-size: 0.88rem; line-height: 1.2; }
-  .flow p { margin: 0.45rem 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.4; }
-
-  @media (max-width: 760px) {
-    .flow { grid-template-columns: 1fr; }
-    .flow li { min-height: auto; padding: 1rem; border-right: 0; border-bottom: 1px solid var(--line); }
-    .flow li:last-child { border-bottom: 0; }
-    .flow li:not(:last-child)::after { top: auto; right: 50%; bottom: -0.55rem; content: "↓"; transform: translateX(50%); }
-  }
-
-  @media (max-width: 520px) {
-    .eli5 { grid-template-columns: 1fr; }
-    .eli5 > span { width: auto; height: 2rem; }
-  }
+  .flow strong { font-family: var(--font-display); font-size: 1rem; font-weight: 400; }
+  .flow p { margin: 0; color: var(--muted); font-size: 0.88rem; font-weight: 600; line-height: 1.55; }
 </style>

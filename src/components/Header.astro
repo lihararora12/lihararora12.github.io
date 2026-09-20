@@ -1,46 +1,33 @@
 ---
 const path = Astro.url.pathname;
 const links = [
-  { href: '/advisories/', label: 'Advisories' },
-  { href: '/scanner/', label: 'Secret Scanner' },
-  { href: '/posts/', label: 'Posts' },
-  { href: '/memes/', label: 'Memes' },
-  { href: '/about/', label: 'About' },
+  { href: '/advisories/', label: 'Advisories', sup: 'CVE' },
+  { href: '/scanner/', label: 'Scanner', sup: 'TRY' },
+  { href: '/posts/', label: 'Posts', sup: 'READ' },
+  { href: '/memes/', label: 'Memes', sup: 'LOL' },
+  { href: '/about/', label: 'About', sup: 'WHO' },
 ];
-
-const today = new Date().toLocaleDateString('en-US', {
-  weekday: 'long',
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric',
-  timeZone: 'America/Los_Angeles',
-});
 ---
 
-<header class="masthead">
-  <div class="shell dateline">
-    <span>{today}</span>
-    <span class="dateline-right">Late edition · No tracking · No ads</span>
-  </div>
-  <div class="shell nameplate">
-    <a class="nameplate-link" href="/" aria-label="vuln.management home">
-      <span class="nameplate-mark" aria-hidden="true">VM</span>
-      <span class="nameplate-word">vuln.management</span>
+<header class="command-bar">
+  <nav class="pill-nav" aria-label="Primary navigation">
+    <a class="brand" href="/" aria-label="vuln.management home">
+      <img src="/images/favicon.webp" alt="" width="34" height="34" class="brand-mark" />
+      <span class="brand-word">vuln<em>.management</em></span>
     </a>
-    <p class="nameplate-tagline">Vulnerability management for the agentic era</p>
-  </div>
-  <nav class="section-nav" aria-label="Primary navigation">
-    <div class="shell section-nav-inner">
-      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
-        Sections
-      </button>
-      <div class="nav-links" id="nav-links">
-        {links.map((link) => (
-          <a href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
-            {link.label}
-          </a>
-        ))}
-      </div>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
+      Menu
+    </button>
+    <div class="nav-links" id="nav-links">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          aria-current={path.startsWith(link.href) ? 'page' : undefined}
+        >
+          {link.label}<sup>{link.sup}</sup>
+        </a>
+      ))}
+      <a href="/scanner/" class="nav-cta">Run the scanner</a>
     </div>
   </nav>
 </header>
@@ -56,134 +43,140 @@ const today = new Date().toLocaleDateString('en-US', {
 </script>
 
 <style>
-  .masthead {
-    border-bottom: 1px solid var(--line);
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
+  .command-bar {
+    position: sticky;
+    top: 0.9rem;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+    pointer-events: none;
   }
 
-  .dateline {
+  .pill-nav {
+    pointer-events: auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block: 0.55rem;
-    border-bottom: 1px solid var(--line);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    gap: 0.4rem;
+    padding: 0.45rem 0.5rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(8, 11, 22, 0.72);
+    border: 1px solid var(--hairline);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
-  .nameplate {
-    padding-block: 2.2rem 1.6rem;
-    text-align: center;
-  }
-
-  .nameplate-link {
+  .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.9rem;
+    gap: 0.6rem;
     text-decoration: none;
+    padding-right: 0.6rem;
   }
 
-  .nameplate-mark {
-    display: grid;
-    width: 3.2rem;
-    height: 3.2rem;
-    flex: 0 0 auto;
-    place-content: center;
-    border: 2px solid var(--ink);
-    background: var(--signal);
-    color: #fff8ec;
-    font-family: var(--mono);
-    font-size: 1.05rem;
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    box-shadow: 0 0 18px rgba(255, 106, 26, 0.55);
+  }
+
+  .brand-word {
+    font-family: var(--font-display);
     font-weight: 700;
-    transform: rotate(-4deg);
+    font-size: 1.02rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    white-space: nowrap;
   }
-
-  .nameplate-word {
-    font-family: var(--serif);
-    font-size: clamp(2.6rem, 7vw, 4.6rem);
-    font-weight: 800;
-    letter-spacing: -0.035em;
-    line-height: 1;
-  }
-
-  .nameplate-tagline {
-    margin: 0.7rem 0 0;
-    color: var(--muted);
-    font-family: var(--serif);
-    font-size: 1.05rem;
-    font-style: italic;
-  }
-
-  .section-nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    border-top: 3px double var(--line-strong);
-    border-bottom: 1px solid var(--line-strong);
-    background: color-mix(in srgb, var(--paper) 94%, transparent);
-    backdrop-filter: blur(14px);
-  }
-
-  .section-nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .brand-word em {
+    font-style: normal;
+    color: var(--orange);
   }
 
   .nav-links {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: 0.15rem;
   }
 
-  .nav-links a {
-    padding: 0.8rem 1.05rem;
-    border-left: 1px solid transparent;
-    border-right: 1px solid transparent;
+  .nav-links a:not(.nav-cta) {
+    position: relative;
+    padding: 0.6rem 0.8rem;
+    border-radius: 999px;
     color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    transition: color 120ms ease, background 120ms ease;
+    text-decoration: none;
+    transition: color 0.18s, background 0.18s;
   }
-
-  .nav-links a:hover { background: var(--surface); color: var(--ink); }
-
+  .nav-links a:not(.nav-cta) sup {
+    font-size: 0.55em;
+    color: var(--faint);
+    margin-left: 0.35em;
+    letter-spacing: 0.06em;
+  }
+  .nav-links a:not(.nav-cta):hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .nav-links a:not(.nav-cta):hover sup { color: var(--orange); }
   .nav-links a[aria-current='page'] {
-    background: var(--ink);
-    color: var(--paper);
+    color: var(--ink);
+    background: rgba(255, 106, 26, 0.14);
   }
+  .nav-links a[aria-current='page'] sup { color: var(--orange); }
+
+  .nav-cta {
+    margin-left: 0.4rem;
+    padding: 0.62rem 1.15rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--orange-hot), var(--orange));
+    color: #140800;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 6px 22px -6px rgba(255, 106, 26, 0.7);
+    transition: transform 0.18s, box-shadow 0.22s;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { transform: scale(1.05); box-shadow: 0 10px 30px -6px rgba(255, 106, 26, 0.85); }
 
   .nav-toggle {
     display: none;
-    width: 100%;
-    padding: 0.8rem 0.5rem;
-    border: 0;
-    background: transparent;
+    border: 1px solid var(--hairline);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--ink);
-    cursor: pointer;
-    font-family: var(--mono);
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    cursor: pointer;
   }
 
-  @media (max-width: 700px) {
-    .dateline-right { display: none; }
-    .nameplate { padding-block: 1.6rem 1.2rem; }
-    .nameplate-mark { width: 2.4rem; height: 2.4rem; font-size: 0.8rem; }
-    .section-nav-inner { display: block; }
+  @media (max-width: 860px) {
+    .command-bar { top: 0.6rem; }
+    .pill-nav { flex-wrap: wrap; border-radius: 24px; width: 100%; justify-content: space-between; }
     .nav-toggle { display: block; }
-    .nav-links { display: none; flex-direction: column; border-top: 1px solid var(--line); }
+    .nav-links {
+      display: none;
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0.4rem 0.2rem 0.3rem;
+    }
     .nav-links.open { display: flex; }
-    .nav-links a { border: 0; border-top: 1px solid var(--line); text-align: center; }
+    .nav-links a:not(.nav-cta) { text-align: left; padding: 0.7rem 0.9rem; }
+    .nav-cta { margin: 0.3rem 0 0; text-align: center; }
   }
 </style>

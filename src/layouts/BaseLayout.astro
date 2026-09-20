@@ -22,22 +22,21 @@ const socialImage = new URL(image, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="broadsheet">
+<html lang="en" data-theme="deepfield">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f4efe0" />
+    <meta name="theme-color" content="#04060c" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
-    <link rel="alternate icon" type="image/png" href="/images/favicon.png" />
+    <link rel="icon" type="image/webp" href="/images/favicon.webp" />
     <link rel="alternate" type="application/rss+xml" title="vuln.management" href="/rss.xml" />
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:site_name" content="vuln.management" />

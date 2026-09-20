@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="8" fill="#f4efe0"/>
-  <rect x="4.5" y="4.5" width="55" height="55" rx="5" fill="none" stroke="#1d1712" stroke-width="3"/>
-  <rect x="13" y="13" width="38" height="38" fill="#c2410c"/>
-  <text x="32" y="39.5" fill="#fff8ec" font-family="ui-monospace, monospace" font-size="18" font-weight="700" text-anchor="middle">VM</text>
-</svg>

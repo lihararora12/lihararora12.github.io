@@ -9,6 +9,35 @@ import { DETECTORS } from '../lib/secret-scanner/detectors';
 const posts = (await getCollection('posts')).filter(isPublished).sort(newestPostsFirst);
 const advisories = (await getCollection('advisories')).filter(isPublished).sort(newestAdvisoriesFirst);
 const detectorCount = DETECTORS.length;
+
+// Patch forecast: weather-style read on the last 14 days of advisories.
+const now = new Date();
+const DAY = 86_400_000;
+const recentAdvisories = advisories.filter(
+  (a) => now.getTime() - a.data.advisoryDate.getTime() < 14 * DAY,
+);
+const actNowCount = recentAdvisories.filter((a) => a.data.priority === 'act-now').length;
+const kevCount = recentAdvisories.filter((a) => a.data.kev).length;
+const highCount = recentAdvisories.filter((a) => a.data.priority === 'high').length;
+const condition = actNowCount > 0 || kevCount > 0 ? 'STORMY' : highCount > 0 ? 'ELEVATED' : 'CALM';
+const conditionCopy = {
+  STORMY: 'Known-exploited vulnerabilities are in the wild. Patch like it is raining.',
+  ELEVATED: 'High-priority advisories are stacking up. Keep the umbrella within reach.',
+  CALM: 'No fires on the board this week. Enjoy it; it will not last.',
+}[condition];
+
+const weekBars = Array.from({ length: 7 }, (_, i) => {
+  const d = new Date(now.getTime() - (6 - i) * DAY);
+  const key = d.toISOString().slice(0, 10);
+  const count = advisories.filter((a) => a.data.advisoryDate.toISOString().slice(0, 10) === key).length;
+  return {
+    label: d.toLocaleDateString('en-US', { weekday: 'narrow', timeZone: 'UTC' }),
+    full: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }),
+    count,
+  };
+});
+const maxBar = Math.max(1, ...weekBars.map((b) => b.count));
+const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 
 <BaseLayout>
@@ -46,6 +75,28 @@ const detectorCount = DETECTORS.length;
     </div>
   </div>
 
+  <section class="forecast shell" aria-labelledby="forecast-heading">
+    <div class="forecast-main">
+      <p class="eyebrow">Patch forecast / updated {forecastDate}</p>
+      <p class="forecast-condition" data-condition={condition.toLowerCase()} id="forecast-heading">{condition}</p>
+      <p class="forecast-copy">{conditionCopy}</p>
+      <p class="forecast-meta">
+        <span><strong>{recentAdvisories.length}</strong> advisories in 14 days</span>
+        <span><strong>{kevCount}</strong> known-exploited</span>
+        <span><strong>{actNowCount}</strong> act-now</span>
+      </p>
+    </div>
+    <div class="forecast-week" role="img" aria-label={`Advisories published per day over the last 7 days, ending ${forecastDate}`}>
+      {weekBars.map((b) => (
+        <div class="forecast-day">
+          <span class="forecast-count">{b.count > 0 ? b.count : ''}</span>
+          <div class="forecast-bar" style={`--h: ${(b.count / maxBar * 100).toFixed(0)}%`} title={`${b.full}: ${b.count} advisories`}></div>
+          <span class="forecast-label">{b.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
   <section class="section advisory-zone">
     <div class="shell">
       <div class="section-head">
@@ -64,8 +115,8 @@ const detectorCount = DETECTORS.length;
   <section class="tool-band shell" aria-labelledby="scanner-heading">
     <div>
       <p class="eyebrow">Browser tool / no upload</p>
-      <h2 id="scanner-heading">A secret scanner that keeps the source secret.</h2>
-      <p>Inspect configuration, source, and logs locally. Findings include redacted context, a reasoned risk score, and practical rotation guidance.</p>
+      <h2 id="scanner-heading">Find leaked secrets without leaking them.</h2>
+      <p>Paste code, config, or logs. {detectorCount} detectors run entirely in your browser and return redacted findings, reasoned risk scores, and rotation guidance. Nothing uploads. Nothing phones home.</p>
     </div>
     <div class="tool-console" aria-hidden="true">
       <span>SCAN_MODE</span><strong>LOCAL_ONLY</strong>
@@ -103,11 +154,10 @@ const detectorCount = DETECTORS.length;
 <style>
   .hero {
     display: grid;
-    min-height: min(47rem, calc(100vh - 4.4rem));
     grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.55fr);
     align-items: center;
     gap: clamp(3rem, 8vw, 8rem);
-    padding-block: clamp(4.5rem, 9vw, 8rem);
+    padding-block: clamp(3.5rem, 7vw, 5.5rem);
   }
 
   .hero .display em { display: block; }
@@ -156,6 +206,49 @@ const detectorCount = DETECTORS.length;
   .inventory strong { color: var(--signal-dark); font-size: 0.88rem; }
   .inventory-status { margin-left: auto; color: var(--acid); }
 
+  .forecast {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 5rem);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    border: 1px solid var(--line-strong);
+    border-radius: 0.35rem;
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--signal) 6%, var(--surface)), var(--surface));
+    box-shadow: var(--shadow);
+  }
+
+  .forecast-condition {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .forecast-condition[data-condition="stormy"] { color: var(--alert); text-shadow: 0 0 34px color-mix(in srgb, var(--alert) 45%, transparent); }
+  .forecast-condition[data-condition="elevated"] { color: #efb545; text-shadow: 0 0 34px color-mix(in srgb, #efb545 40%, transparent); }
+  .forecast-condition[data-condition="calm"] { color: var(--acid); text-shadow: 0 0 34px color-mix(in srgb, var(--acid) 35%, transparent); }
+
+  .forecast-copy { max-width: 34rem; margin: 0.9rem 0 0; color: var(--ink); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; }
+  .forecast-meta { display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; margin: 1rem 0 0; color: var(--muted); font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; }
+  .forecast-meta strong { color: var(--signal-dark); font-size: 0.85rem; }
+
+  .forecast-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; align-self: stretch; }
+  .forecast-day { display: flex; min-height: 9rem; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0.35rem; }
+  .forecast-count { min-height: 1rem; color: var(--signal-dark); font-family: var(--mono); font-size: 0.66rem; font-weight: 700; }
+  .forecast-bar {
+    width: 100%;
+    max-width: 2.2rem;
+    height: var(--h);
+    min-height: 0.25rem;
+    background: linear-gradient(180deg, var(--signal), color-mix(in srgb, var(--signal) 35%, transparent));
+    opacity: 0.85;
+  }
+  .forecast-label { color: var(--muted); font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; }
+
   .advisory-zone { background: color-mix(in srgb, var(--paper-deep) 75%, transparent); }
 
   .tool-band {
@@ -192,8 +285,11 @@ const detectorCount = DETECTORS.length;
   .meme-band h2 { max-width: 23ch; margin: 0 0 1.3rem; font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -0.045em; line-height: 1.05; }
 
   @media (max-width: 800px) {
-    .hero { min-height: auto; grid-template-columns: 1fr; }
+    .hero { grid-template-columns: 1fr; }
     .signal-panel { max-width: 32rem; }
+    .forecast { grid-template-columns: 1fr; }
+    .forecast-week { max-width: 26rem; }
+    .forecast-day { min-height: 7rem; }
     .tool-band { grid-template-columns: 1fr; }
     .tool-console { max-width: 20rem; }
     .tool-band .button { width: max-content; }

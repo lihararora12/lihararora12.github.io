@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vuln.management/sitemap-index.xml

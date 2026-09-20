@@ -1,11 +1,11 @@
 ---
 const path = Astro.url.pathname;
-// NOTE: no separate "Scanner" link; the single CTA below is the one path to /scanner/.
 const links = [
   { href: '/advisories/', label: 'Advisories' },
   { href: '/posts/', label: 'Posts' },
   { href: '/memes/', label: 'Memes' },
   { href: '/about/', label: 'About' },
+  { href: '/scanner/', label: 'Secret Scanner' },
 ];
 ---
 
@@ -28,7 +28,6 @@ const links = [
           {link.label}
         </a>
       ))}
-      <a href="/scanner/" class="nav-cta">Run the scanner</a>
     </div>
   </nav>
 </header>
@@ -106,30 +105,6 @@ const links = [
     transform: rotate(1deg);
   }
 
-  .nav-cta {
-    margin-left: 0.4rem;
-    padding: 0.62rem 1.2rem;
-    border: var(--bd-thin);
-    border-radius: 999px;
-    background: var(--tomato);
-    color: #fff8ee;
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    text-decoration: none;
-    box-shadow: 3px 3px 0 var(--ink);
-    transform: rotate(1.2deg);
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .nav-cta:hover {
-    background: var(--tomato-deep);
-    transform: rotate(-1deg) translate(-1px, -1px);
-    box-shadow: 5px 5px 0 var(--ink);
-    color: #fff8ee;
-  }
-  .nav-cta:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
 
   .nav-toggle {
     display: none;
@@ -157,6 +132,5 @@ const links = [
     }
     .nav-links.open { display: flex; }
     .nav-tab { text-align: left; border-color: var(--line); }
-    .nav-cta { margin: 0.4rem 0 0; text-align: center; transform: none; }
   }
 </style>

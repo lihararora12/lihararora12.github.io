@@ -62,17 +62,19 @@ const date = entry.data.publishedAt.toLocaleDateString('en-US', {
     width: min(calc(100% - 2rem), 70rem);
     margin: 0 auto 6rem;
     padding: 1.5rem;
-    border: 1px solid var(--line);
-    border-radius: 0.35rem;
-    background: var(--acid);
-    color: #111714;
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: var(--shadow);
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
   }
 
-  .article-cta h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; letter-spacing: -0.04em; }
-  .article-cta .eyebrow { color: #38402d; }
+  .article-cta h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; }
+  .article-cta .eyebrow { color: #f0b27a; }
+  .article-cta .eyebrow::before { background: #f0b27a; }
 
   @media (max-width: 600px) {
     .article-cta { align-items: flex-start; flex-direction: column; }

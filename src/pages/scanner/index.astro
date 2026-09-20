@@ -43,11 +43,11 @@ import SecretScanner from '../../components/SecretScanner.astro';
   .scanner-proof strong { display: block; margin-top: 0.6rem; font-size: 1.1rem; }
   .scanner-proof p { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
   .scanner-workspace { padding-bottom: clamp(4rem, 8vw, 7rem); }
-  .how-it-works { padding-block: clamp(3.5rem, 7vw, 6rem); border-top: 1px solid var(--line); }
+  .how-it-works { padding-block: clamp(3.5rem, 7vw, 6rem); border-top: 3px double var(--line-strong); }
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
-  .steps article { min-height: 13rem; padding: 1rem; border: 1px solid var(--line); background: var(--surface); }
+  .steps article { min-height: 13rem; padding: 1rem; border: 1px solid var(--line-strong); border-radius: 2px; background: var(--surface); }
   .steps span { color: var(--signal-dark); font: 800 0.65rem var(--mono); }
-  .steps h3 { margin: 2rem 0 0.6rem; font-size: 1.15rem; letter-spacing: -0.025em; }
+  .steps h3 { margin: 2rem 0 0.6rem; font-family: var(--serif); font-size: 1.2rem; font-weight: 700; letter-spacing: -0.01em; }
   .steps p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
   @media (max-width: 800px) { .scanner-hero { grid-template-columns: 1fr; } .scanner-proof { max-width: 30rem; } }
   @media (max-width: 650px) { .steps { grid-template-columns: 1fr; } .steps article { min-height: auto; } }

@@ -1,17 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
   <title id="title">vuln.management</title>
   <desc id="desc">Manage the risk. Not just the queue.</desc>
-  <rect width="1200" height="630" fill="#071018"/>
-  <g stroke="#65e7f1" stroke-opacity=".09">
-    <path d="M0 70h1200M0 150h1200M0 230h1200M0 310h1200M0 390h1200M0 470h1200M0 550h1200"/>
-    <path d="M80 0v630M240 0v630M400 0v630M560 0v630M720 0v630M880 0v630M1040 0v630"/>
+  <rect width="1200" height="630" fill="#f4efe0"/>
+  <g stroke="#1d1712" stroke-opacity=".06">
+    <path d="M0 90h1200M0 180h1200M0 270h1200M0 360h1200M0 450h1200M0 540h1200"/>
   </g>
-  <rect x="74" y="63" width="50" height="50" fill="none" stroke="#65e7f1" stroke-width="2"/>
-  <text x="86" y="95" fill="#65e7f1" font-family="ui-monospace, monospace" font-size="18" font-weight="700">VM</text>
-  <text x="145" y="96" fill="#e8f0f4" font-family="ui-monospace, monospace" font-size="27" font-weight="700">vuln.management</text>
-  <text x="75" y="285" fill="#e8f0f4" font-family="Arial, sans-serif" font-size="92" font-weight="700" letter-spacing="-5">Manage the risk.</text>
-  <text x="75" y="400" fill="#65e7f1" font-family="Arial, sans-serif" font-size="100" font-weight="700" letter-spacing="-6">Not just the queue.</text>
-  <path d="M76 500h1048" stroke="#65e7f1" stroke-opacity=".5"/>
-  <text x="76" y="548" fill="#8fa2ae" font-family="ui-monospace, monospace" font-size="21" letter-spacing="3">VULNERABILITY MANAGEMENT // AI // AGENTS // MEMES</text>
-  <circle cx="1108" cy="88" r="7" fill="#b7f34a"/>
+  <rect x="74" y="60" width="52" height="52" fill="#c2410c" stroke="#1d1712" stroke-width="2"/>
+  <text x="100" y="94" fill="#fff8ec" font-family="ui-monospace, monospace" font-size="19" font-weight="700" text-anchor="middle">VM</text>
+  <text x="146" y="96" fill="#1d1712" font-family="ui-monospace, monospace" font-size="27" font-weight="700">vuln.management</text>
+  <text x="72" y="300" fill="#1d1712" font-family="Georgia, serif" font-size="96" font-weight="700" letter-spacing="-4">Manage the risk.</text>
+  <text x="72" y="412" fill="#c2410c" font-family="Georgia, serif" font-size="96" font-weight="700" font-style="italic" letter-spacing="-4">Not just the queue.</text>
+  <path d="M74 496h1052" stroke="#1d1712" stroke-width="6"/>
+  <path d="M74 508h1052" stroke="#1d1712" stroke-width="2"/>
+  <text x="74" y="556" fill="#6e6250" font-family="ui-monospace, monospace" font-size="21" letter-spacing="3">VULNERABILITY MANAGEMENT // AI // AGENTS // MEMES</text>
 </svg>

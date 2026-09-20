@@ -55,7 +55,7 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     </div>
 
     <aside class="signal-panel" aria-label="Current site signal">
-      <header><span>VM_CONSOLE</span><span class="online">ONLINE</span></header>
+      <header><span>NEWSROOM WIRE</span><span class="online">ONLINE</span></header>
       <dl>
         <div><dt>Scope</dt><dd>AI × vulnerability management</dd></div>
         <div><dt>Priority</dt><dd>Evidence over vibes</dd></div>
@@ -153,31 +153,54 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
 
 <style>
   .hero {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.55fr);
     align-items: center;
     gap: clamp(3rem, 8vw, 8rem);
     padding-block: clamp(3.5rem, 7vw, 5.5rem);
+    overflow: clip;
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 88% 6%, rgba(194, 65, 12, 0.12), transparent 24rem),
+      radial-gradient(circle at 4% 92%, rgba(180, 83, 9, 0.08), transparent 20rem);
+    pointer-events: none;
+    content: "";
   }
 
   .hero .display em { display: block; }
   .hero .display {
     max-width: 14ch;
     font-size: clamp(3rem, 6.6vw, 6rem);
-    letter-spacing: -0.06em;
+    letter-spacing: -0.03em;
     line-height: 0.96;
     text-wrap: balance;
   }
-  .hero-copy { min-width: 0; }
+  .hero-copy { position: relative; min-width: 0; }
   .hero .lede { margin: 1.6rem 0 0; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.8rem; }
 
   .signal-panel {
+    position: relative;
     overflow: hidden;
     border: 1px solid var(--line-strong);
-    border-radius: 0.35rem;
+    border-radius: 2px;
     background: var(--surface);
     box-shadow: var(--shadow);
+  }
+
+  .signal-panel::before {
+    position: absolute;
+    top: -1px;
+    left: 0.8rem;
+    width: 3.5rem;
+    height: 3px;
+    background: var(--signal);
+    content: "";
   }
 
   .signal-panel header,
@@ -186,25 +209,26 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     align-items: center;
     justify-content: space-between;
     padding: 0.65rem 0.8rem;
-    background: color-mix(in srgb, var(--signal) 7%, var(--surface-solid));
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-solid);
     color: var(--muted);
     font: 700 0.61rem var(--mono);
     letter-spacing: 0.08em;
   }
 
-  .signal-panel footer { justify-content: flex-start; border-top: 1px solid var(--line); }
-  .online { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--acid); }
-  .online::before { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--acid); box-shadow: 0 0 12px var(--acid); content: ""; }
+  .signal-panel footer { justify-content: flex-start; border-top: 1px solid var(--line); border-bottom: 0; }
+  .online { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--ok); }
+  .online::before { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.16); content: ""; }
   .signal-panel dl { margin: 0; padding: 0.5rem 0.8rem; }
   .signal-panel dl div { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
   .signal-panel dl div:last-child { border-bottom: 0; }
   .signal-panel dt { color: var(--signal-dark); font: 700 0.62rem var(--mono); text-transform: uppercase; }
   .signal-panel dd { margin: 0; font-size: 0.86rem; font-weight: 650; }
 
-  .inventory { border-block: 1px solid var(--line); background: var(--paper-deep); }
+  .inventory { border-block: 3px double var(--line-strong); background: var(--surface-solid); }
   .inventory .shell { display: flex; min-height: 3.6rem; align-items: center; gap: 2rem; color: var(--muted); font: 650 0.67rem var(--mono); text-transform: uppercase; }
-  .inventory strong { color: var(--signal-dark); font-size: 0.88rem; }
-  .inventory-status { margin-left: auto; color: var(--acid); }
+  .inventory strong { color: var(--ink); font-size: 0.88rem; }
+  .inventory-status { margin-left: auto; color: var(--ok); }
 
   .forecast {
     display: grid;
@@ -214,25 +238,24 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     margin-top: clamp(2.5rem, 5vw, 4rem);
     padding: clamp(1.4rem, 3vw, 2.2rem);
     border: 1px solid var(--line-strong);
-    border-radius: 0.35rem;
-    background:
-      linear-gradient(135deg, color-mix(in srgb, var(--signal) 6%, var(--surface)), var(--surface));
+    border-radius: 2px;
+    background: var(--surface);
     box-shadow: var(--shadow);
   }
 
   .forecast-condition {
     margin: 0;
-    font-family: var(--mono);
-    font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5.5vw, 4.6rem);
     font-weight: 800;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.03em;
     line-height: 1;
   }
-  .forecast-condition[data-condition="stormy"] { color: var(--alert); text-shadow: 0 0 34px color-mix(in srgb, var(--alert) 45%, transparent); }
-  .forecast-condition[data-condition="elevated"] { color: #efb545; text-shadow: 0 0 34px color-mix(in srgb, #efb545 40%, transparent); }
-  .forecast-condition[data-condition="calm"] { color: var(--acid); text-shadow: 0 0 34px color-mix(in srgb, var(--acid) 35%, transparent); }
+  .forecast-condition[data-condition="stormy"] { color: var(--alert); }
+  .forecast-condition[data-condition="elevated"] { color: var(--acid); }
+  .forecast-condition[data-condition="calm"] { color: var(--ok); }
 
-  .forecast-copy { max-width: 34rem; margin: 0.9rem 0 0; color: var(--ink); font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; }
+  .forecast-copy { max-width: 34rem; margin: 0.9rem 0 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-style: italic; }
   .forecast-meta { display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; margin: 1rem 0 0; color: var(--muted); font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; }
   .forecast-meta strong { color: var(--signal-dark); font-size: 0.85rem; }
 
@@ -244,12 +267,14 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     max-width: 2.2rem;
     height: var(--h);
     min-height: 0.25rem;
-    background: linear-gradient(180deg, var(--signal), color-mix(in srgb, var(--signal) 35%, transparent));
+    border-radius: 1px 1px 0 0;
+    background: var(--signal);
     opacity: 0.85;
   }
   .forecast-label { color: var(--muted); font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; }
 
-  .advisory-zone { background: color-mix(in srgb, var(--paper-deep) 75%, transparent); }
+  .advisory-zone { background: var(--paper-deep); border-block: 3px double var(--line-strong); }
+  .advisory-zone .section-head { margin-bottom: 2rem; }
 
   .tool-band {
     display: grid;
@@ -259,15 +284,16 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     margin-block: clamp(3rem, 6vw, 5rem);
     padding: clamp(1.2rem, 3vw, 2rem);
     border: 1px solid var(--line-strong);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--signal) 7%, var(--surface)), var(--surface));
+    border-radius: 2px;
+    background: var(--surface);
     box-shadow: var(--shadow);
   }
 
-  .tool-band h2 { max-width: 22ch; margin: 0; font-size: clamp(1.7rem, 3vw, 2.7rem); letter-spacing: -0.045em; line-height: 1.04; }
+  .tool-band h2 { max-width: 22ch; margin: 0; font-family: var(--serif); font-size: clamp(1.7rem, 3vw, 2.7rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.04; }
   .tool-band p:not(.eyebrow) { max-width: 43rem; margin: 0.8rem 0 0; color: var(--muted); font-size: 0.9rem; }
   .tool-console { display: grid; grid-template-columns: auto auto; gap: 0.45rem 1rem; color: var(--muted); font: 700 0.62rem var(--mono); }
   .tool-console strong { color: var(--ink); text-align: right; }
-  .tool-console .safe { color: var(--acid); }
+  .tool-console .safe { color: var(--ok); }
 
   .meme-band {
     display: grid;
@@ -276,13 +302,15 @@ const forecastDate = now.toLocaleDateString('en-US', { month: 'short', day: 'num
     gap: clamp(2rem, 6vw, 6rem);
     margin-block: clamp(4rem, 8vw, 7rem);
     padding: 1.2rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
     background: var(--surface);
+    box-shadow: var(--shadow);
   }
 
-  .meme-frame { max-height: 13rem; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+  .meme-frame { max-height: 13rem; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 2px; background: var(--paper); transform: rotate(-1deg); }
   .meme-frame img { width: 100%; height: 13rem; object-fit: cover; }
-  .meme-band h2 { max-width: 23ch; margin: 0 0 1.3rem; font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -0.045em; line-height: 1.05; }
+  .meme-band h2 { max-width: 23ch; margin: 0 0 1.3rem; font-family: var(--serif); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
 
   @media (max-width: 800px) {
     .hero { grid-template-columns: 1fr; }
